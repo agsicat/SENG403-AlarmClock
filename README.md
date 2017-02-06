@@ -8,4 +8,4 @@
 - [Ibrahim Seklani](https://github.com/isekl414)
 - [Jeffery Huo](https://github.com/jeffh1996)
 - [Jenny Le](https://github.com/Jennykuma)
-- [MMatteo Molnar](https://github.com/matteo-molnar)
+- [Matteo Molnar](https://github.com/matteo-molnar)
