@@ -87,11 +87,12 @@ public class AlarmClock{
 
 	// Angela Sicat: Method called when an alarm is to be dismissed when 'ringing', sets checkAlarm to false
 	public void dismissAlarm() {
-		if (checkAlarm == false)
+		if (checkAlarm() == false)
 			System.out.println("An alarm is not ringing!");
 		else
 		{
-			checkAlarm = false;
+			checkRing = false;
+			alarmSet = false;
 			System.out.println("The current alarm has been dismissed");
 		}
 	}
