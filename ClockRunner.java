@@ -99,6 +99,19 @@ class AlarmClock{
 		System.out.println("It is not time to ring");
 		return checkRing;
 	}
+	
+	// method called when an alarm is to be cancelled, sets alarmSet to false
+	public static void cancelAlarm() {
+		if (alarmSet == false)
+			System.out.println("No alarm is set to cancel");
+		else
+		{
+			alarmSet == false;
+			inputHour == null;  // hour and minute should maybe be set to 0 instead of null?
+			inputMinute == null;
+			System.out.println("The current alarm has been cancelled");
+		}
+	}
 
 
 
