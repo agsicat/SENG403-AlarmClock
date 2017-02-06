@@ -28,7 +28,7 @@ public class ClockRunner{
 		if(setAlarm.equals("Y")){
 			mainClock.setAlarm();
 		} 
-	
+		
 		mainClock.checkAlarm();
 	}
 

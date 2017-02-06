@@ -1,8 +1,9 @@
-//Jenny's Alarm Class
-
+import java.util.*;
+import java.time.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Scanner;
+import java.time.LocalDateTime;
+import java.time.Month;
 
 public class AlarmClock{
 
@@ -77,6 +78,8 @@ public class AlarmClock{
 		else
 		{
 			alarmSet = false;
+			inputHour = 0;
+			inputMinute = 0;
 			System.out.println("The current alarm has been cancelled");
 		}
 	}
