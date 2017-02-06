@@ -3,12 +3,12 @@ import java.util.HashMap;
 /**
  * Class that creates threads and maps their IDs
  * Can also destroy a thread in the mapping given the ID
- * Version 1.0
+ * Version 1.1
  */
 public class threadSpawner {
 	
 	//maps the thread ID with the actual thread
-	private HashMap<Long, dummyThread> threadID;
+	public HashMap<Long, AlarmThread> threadID;
 	
 	//constructor
 	public threadSpawner(){
@@ -18,11 +18,10 @@ public class threadSpawner {
 	/**
 	 * Spawns a new thread and puts its ID in the hashmap
 	 */
-	//TODO: Change the name to spawn actual thread
 	public void spawnNewThread(){
-		dummyThread dt = new dummyThread();
-		dt.start();
-		threadID.put(dt.getId(), dt);
+		AlarmThread at = new AlarmThread();
+		at.start();
+		threadID.put(at.getId(), at);
 	}
 	
 	/**
@@ -30,7 +29,7 @@ public class threadSpawner {
 	 * @param id	The ID of the thread to be stopped
 	 */
 	public void stopThread(Long id){
-		threadID.get(id).shutdown = true;
+		threadID.get(id).terminate = true;
 	}
 	
 	/**
