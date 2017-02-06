@@ -4,9 +4,11 @@
  * It contains the Graphic User Interface for the Alarm Clock
  *
  * @author Francisco Garcia
- * @version 0.5
+ * @version 0.8
  */
 
+import java.awt.*;
+import java.util.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +20,7 @@ public class Gui extends JFrame implements ActionListener{
     private JFrame frame;
     private JPanel panel;
     private JButton btnSwitch, btnAlarm;
+    private JLabel label;
 
     /**
      * Constructor
@@ -37,8 +40,7 @@ public class Gui extends JFrame implements ActionListener{
         panel = new JPanel();
         panel.setLayout(null);;
 
-        //Add panel to frame
-        frame.add(panel);
+
 
         //Initialize the first JButton of the GUI
         btnSwitch = new JButton("Switch");
@@ -52,6 +54,43 @@ public class Gui extends JFrame implements ActionListener{
         btnAlarm.setBounds(425, 375, 120, 35);
         panel.add(btnAlarm);
 
+
+        //Initialize the label, it contains the time
+        String date = getTime();
+        label = new JLabel(date);
+        label.setBounds(250, 100, 300, 200);
+        label.setFont(new Font("Serif", Font.PLAIN, 54));
+        panel.add(label);
+
+        //Add panel to frame
+        frame.add(panel);
+
+
+    }
+
+    /**
+     *  Function returns the time of the users machine
+     *
+     *  @return   temp      String containing the current time
+     */
+
+    public String getTime(){
+
+        int second = 0;
+        String AMPM = "";
+        Calendar time = new GregorianCalendar();
+
+        if (second != time.get(Calendar.SECOND)) {
+            if (time.get(Calendar.AM_PM) == 1) {
+                AMPM = "PM";
+            } else {
+                AMPM = "AM";
+            }
+        }
+
+        String temp =  time.get(Calendar.HOUR) + ":" + time.get(Calendar.MINUTE) + ":" +time.get(Calendar.SECOND) + " " + AMPM;
+
+        return temp;
     }
 
     @Override
@@ -72,13 +111,13 @@ public class Gui extends JFrame implements ActionListener{
         }
     }
 
-
     /**
      * Main function of the class
      *
      * @param args      Command Line Arguments
      */
     public static void main (String[] args){
-        new Gui();
+            new Gui();
+
     }
 }
