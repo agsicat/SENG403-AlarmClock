@@ -107,7 +107,7 @@ class AlarmClock{
 		else
 		{
 			alarmSet = false;
-			inputHour = 0;  // hour and minute should maybe be set to 0 instead of null?
+			inputHour = 0;
 			inputMinute = 0;
 			System.out.println("The current alarm has been cancelled");
 		}
