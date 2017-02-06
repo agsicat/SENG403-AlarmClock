@@ -18,13 +18,8 @@ public class threadSpawner {
 	/**
 	 * Spawns a new thread and puts its ID in the hashmap
 	 */
-<<<<<<< HEAD
-	public void spawnNewThread(){
-		AlarmThread at = new AlarmThread();
-=======
 	public void spawnNewThread(AlarmClock a){
 		AlarmThread at = new AlarmThread(a);
->>>>>>> refs/remotes/origin/Aaron
 		at.start();
 		threadID.put(at.getId(), at);
 	}
