@@ -57,6 +57,7 @@ public class AlarmClock{
 			return checkRing;
 		} 
 		
+		currentTime = LocalTime.now(); // update and get current time 
 		int hour = currentTime.getHour();
 		int minute = currentTime.getMinute();
 		
