@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.time.Month;
 
+// Jenny Le: Implemented AlarmClock
 public class AlarmClock{
 
 	private LocalDate currentDate;
@@ -71,7 +72,7 @@ public class AlarmClock{
 		return checkRing;
 	}
 	
-	// method called when an alarm is to be cancelled, sets alarmSet to false
+	// Matteo Molnar: method called when an alarm is to be cancelled, sets alarmSet to false
 	public void cancelAlarm() {
 		if (alarmSet == false)
 			System.out.println("No alarm is set to cancel");
@@ -84,6 +85,16 @@ public class AlarmClock{
 		}
 	}
 
-
+	// Angela Sicat: Method called when an alarm is to be dismissed when 'ringing', sets checkAlarm to false
+	public void dismissAlarm() {
+		if (checkAlarm() == false)
+			System.out.println("An alarm is not ringing!");
+		else
+		{
+			checkRing = false;
+			alarmSet = false;
+			System.out.println("The current alarm has been dismissed");
+		}
+	}
 
 }
