@@ -15,7 +15,7 @@ public class AlarmThread extends Thread{
 			
 			//wait about 0.1 seconds
 			try {
-				currentThread().wait(10);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				//Ignore
 			}
