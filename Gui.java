@@ -4,7 +4,7 @@
  * It contains the Graphic User Interface for the Alarm Clock
  *
  * @author Francisco Garcia
- * @version 0.8
+ * @version 1.0
  */
 
 import java.awt.*;
@@ -40,8 +40,6 @@ public class Gui extends JFrame implements ActionListener{
         panel = new JPanel();
         panel.setLayout(null);;
 
-
-
         //Initialize the first JButton of the GUI
         btnSwitch = new JButton("Switch");
         btnSwitch.addActionListener(this);
@@ -76,20 +74,23 @@ public class Gui extends JFrame implements ActionListener{
 
     public String getTime(){
 
-        int second = 0;
+        int second = -1;
         String AMPM = "";
         Calendar time = new GregorianCalendar();
 
         if (second != time.get(Calendar.SECOND)) {
             if (time.get(Calendar.AM_PM) == 1) {
                 AMPM = "PM";
-            } else {
+            }
+
+            else {
                 AMPM = "AM";
             }
         }
 
-        String temp =  time.get(Calendar.HOUR) + ":" + time.get(Calendar.MINUTE) + ":" +time.get(Calendar.SECOND) + " " + AMPM;
+        // We still need the branching statements to convert 0 to 12
 
+        String temp =  time.get(Calendar.HOUR) + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " " + AMPM;
         return temp;
     }
 
@@ -117,7 +118,11 @@ public class Gui extends JFrame implements ActionListener{
      * @param args      Command Line Arguments
      */
     public static void main (String[] args){
-            new Gui();
-
+        Gui g = new Gui();
+        while(true){
+            String date = g.getTime();
+            g.label.setText(date);
+            g.repaint();
+        }
     }
 }
