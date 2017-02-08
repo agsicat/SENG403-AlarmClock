@@ -30,6 +30,7 @@ public class threadSpawner {
 	 */
 	public void stopThread(Long id){
 		threadID.get(id).terminate = true;
+		threadID.remove(id);
 	}
 	
 	/**
@@ -40,6 +41,11 @@ public class threadSpawner {
 		return new ArrayList<Long>(threadID.keySet());
 	}
 	
+	/**
+	 * Retrieves a thread
+	 * @param ID 	ID of the thread to be retrieved
+	 * @return		The AlarmThread with that ID
+	 */
 	public AlarmThread getThreadByID(Long ID){
 		return threadID.get(ID);
 	}
