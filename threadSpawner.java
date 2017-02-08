@@ -3,7 +3,7 @@ import java.util.HashMap;
 /**
  * Class that creates threads and maps their IDs
  * Can also destroy a thread in the mapping given the ID
- * Version 1.1
+ * Version 1.2
  */
 public class threadSpawner {
 	
@@ -18,8 +18,8 @@ public class threadSpawner {
 	/**
 	 * Spawns a new thread and puts its ID in the hashmap
 	 */
-	public void spawnNewThread(){
-		AlarmThread at = new AlarmThread();
+	public void spawnNewThread(AlarmClock a){
+		AlarmThread at = new AlarmThread(a);
 		at.start();
 		threadID.put(at.getId(), at);
 	}
@@ -36,7 +36,11 @@ public class threadSpawner {
 	 * Gets a list of IDs of all threads
 	 * @return The list of IDs
 	 */
-	public ArrayList<Long> getThreadID(){
+	public ArrayList<Long> getAllThreadID(){
 		return new ArrayList<Long>(threadID.keySet());
+	}
+	
+	public AlarmThread getThreadByID(Long ID){
+		return threadID.get(ID);
 	}
 }
