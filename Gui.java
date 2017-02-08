@@ -76,7 +76,7 @@ public class Gui extends JFrame implements ActionListener{
 
     public String getTime(){
 
-        int second = 0;
+        int second = -1;
         String AMPM = "";
         Calendar time = new GregorianCalendar();
 
