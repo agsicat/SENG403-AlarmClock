@@ -49,4 +49,12 @@ public class threadSpawner {
 	public AlarmThread getThreadByID(Long ID){
 		return threadID.get(ID);
 	}
+	
+	public void dismiss(){
+		//TODO: Link to dismiss function in AlarmClock
+	}
+	
+	public void cancel(){
+		//TODO: Link to cancel function in AlarmClock
+	}
 }
