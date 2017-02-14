@@ -19,7 +19,7 @@ public class Gui extends JFrame implements ActionListener{
     //Variables for GUI Component
     private JFrame frame;
     private JPanel panel;
-    private JButton btnSwitch, btnAlarm;
+    private JButton btnSwitch, btnAlarm, btnCancel;
     private JLabel label;
 
     /**
@@ -59,6 +59,13 @@ public class Gui extends JFrame implements ActionListener{
         label.setBounds(250, 100, 300, 200);
         label.setFont(new Font("Serif", Font.PLAIN, 54));
         panel.add(label);
+
+        //TEST
+        btnCancel = new JButton("Cancel");
+        btnCancel.addActionListener(this);
+        btnCancel.setBounds(425, 275, 120, 35); //PLACE BUTTON SOMEWHERE ELSE
+        panel.add(btnCancel);
+        //TEST
 
         //Add panel to frame
         frame.add(panel);
@@ -101,7 +108,7 @@ public class Gui extends JFrame implements ActionListener{
         return temp;
     }
 
-    
+
     @Override
     /**
      * Function allows the GUI to respond to an action performed
@@ -117,6 +124,10 @@ public class Gui extends JFrame implements ActionListener{
 
         else if(temp == "Alarm" ){
             JOptionPane.showMessageDialog(null, "Alarm Menu");
+        }
+
+        else if(temp == "Cancel"){
+            JOptionPane.showMessageDialog(null, "Cancel Alarm");
         }
     }
 
