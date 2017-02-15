@@ -4,7 +4,8 @@
  * It contains the Graphic User Interface for the Alarm Clock
  *
  * @author Francisco Garcia
- * @version 0.8
+ * @Edit Aaron Kobelsky
+ * @version 2.0
  */
 
 import java.awt.*;
@@ -14,13 +15,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-public class Gui extends JFrame implements ActionListener{
+public class Gui extends JFrame implements ActionListener, Runnable{
 
     //Variables for GUI Component
     private JFrame frame;
     private JPanel panel;
     private JButton btnSwitch, btnAlarm;
     private JLabel label;
+    
+    //storage for the alarms in the system
+    private static threadSpawner alarms = new threadSpawner();
 
     /**
      * Constructor
@@ -39,8 +43,6 @@ public class Gui extends JFrame implements ActionListener{
         //Initialize JPanel of the GUI
         panel = new JPanel();
         panel.setLayout(null);;
-
-
 
         //Initialize the first JButton of the GUI
         btnSwitch = new JButton("Switch");
@@ -76,23 +78,34 @@ public class Gui extends JFrame implements ActionListener{
 
     public String getTime(){
 
-        int second = 0;
+        int second = -1;
         String AMPM = "";
         Calendar time = new GregorianCalendar();
 
         if (second != time.get(Calendar.SECOND)) {
             if (time.get(Calendar.AM_PM) == 1) {
                 AMPM = "PM";
-            } else {
+            }
+
+            else {
                 AMPM = "AM";
             }
         }
 
-        String temp =  time.get(Calendar.HOUR) + ":" + time.get(Calendar.MINUTE) + ":" +time.get(Calendar.SECOND) + " " + AMPM;
+
+        String temp;
+
+        if(time.get(Calendar.HOUR) == 0){
+            temp =  12 + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " " + AMPM;
+        }
+        else {
+            temp =  time.get(Calendar.HOUR) + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " " + AMPM;
+        }
 
         return temp;
     }
 
+    
     @Override
     /**
      * Function allows the GUI to respond to an action performed
@@ -117,11 +130,17 @@ public class Gui extends JFrame implements ActionListener{
      * @param args      Command Line Arguments
      */
     public static void main (String[] args){
-            Gui g = new Gui();
-            while(true){
-            	String date = g.getTime();
-            	g.label.setText(date);
-            	g.repaint();
-            }
+        Gui g = new Gui();
+        g.run();
     }
+    
+    @Override
+	public void run() {
+		// TODO Auto-generated method stub
+		 while(true){
+         	String date = this.getTime();
+         	this.label.setText(date);
+         	this.repaint();
+         }
+	}
 }
