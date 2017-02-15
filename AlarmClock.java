@@ -24,8 +24,6 @@ public class AlarmClock{
 		currentTime = LocalTime.of(0, 0); 
 	}
 
-	// get the time
-	// this returns void, but will eventually return int
 
 	public LocalTime checkTime(){
 		currentTime = LocalTime.now();
