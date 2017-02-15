@@ -30,6 +30,7 @@ public class threadSpawner {
 	 */
 	public void stopThread(Long id){
 		threadID.get(id).terminate = true;
+		threadID.remove(id);
 	}
 	
 	/**
@@ -40,7 +41,37 @@ public class threadSpawner {
 		return new ArrayList<Long>(threadID.keySet());
 	}
 	
+	/**
+	 * Retrieves a thread
+	 * @param ID 	ID of the thread to be retrieved
+	 * @return		The AlarmThread with that ID
+	 */
 	public AlarmThread getThreadByID(Long ID){
 		return threadID.get(ID);
 	}
+	
+	// Angela Sicat: Method called when an alarm is to be dismissed when 'ringing', sets checkAlarm to false
+		public void dismissAlarm(Long ID) {
+			if (getThreadByID(ID).alarm.checkAlarm() == false)
+				System.out.println("An alarm is not ringing!");
+			else
+			{
+				getThreadByID(ID).alarm.setCheckRing(false);
+				getThreadByID(ID).alarm.setAlarmSet(false);
+				System.out.println("The current alarm has been dismissed");
+			}
+		}
+	
+		// Matteo Molnar: method called when an alarm is to be cancelled, sets alarmSet to false
+		public void cancelAlarm(Long ID) {
+			if (getThreadByID(ID).alarm.getAlarmSet() == false)
+				System.out.println("No alarm is set to cancel");
+			else
+			{
+				getThreadByID(ID).alarm.setAlarmSet(false);
+				getThreadByID(ID).alarm.setInputHour(0);
+				getThreadByID(ID).alarm.setInputMinute(0);
+				System.out.println("The current alarm has been cancelled");
+			}
+		}
 }
