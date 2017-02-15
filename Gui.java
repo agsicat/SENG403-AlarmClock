@@ -116,27 +116,27 @@ public class Gui extends JFrame implements ActionListener{
         }
 
         else if(temp == "Alarm" ){
-          alarmFrame = new JFrame("Alarms");
-          alarmFrame.setVisible(true);
-          alarmFrame.setSize(700, 500);
-          alarmFrame.setResizable(false);
-          alarmFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            alarmFrame = new JFrame("Alarms");
+            alarmFrame.setVisible(true);
+            alarmFrame.setSize(700, 500);
+            alarmFrame.setResizable(false);
+            alarmFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-          alarmPanel = new JPanel();
-          alarmPanel.setLayout(null);;
+            alarmPanel = new JPanel();
+            alarmPanel.setLayout(null);;
 
-          //TEST
-          btnCancel = new JButton("Cancel");
-          btnCancel.addActionListener(this);
-          btnCancel.setBounds(425, 275, 120, 35); //PLACE BUTTON SOMEWHERE ELSE
-          alarmPanel.add(btnCancel);
-          //TEST
+            //TEST
+            btnCancel = new JButton("Cancel");
+            btnCancel.addActionListener(this);
+            btnCancel.setBounds(425, 275, 120, 35); //PLACE BUTTON SOMEWHERE ELSE
+            alarmPanel.add(btnCancel);
+            //TEST
 
-          alarmFrame.add(alarmPanel);
+            alarmFrame.add(alarmPanel);
         }
 
         else if (temp == "Cancel") {
-          JOptionPane.showMessageDialog(null, "THE ALARM IS NOW CANCELLED YAAAAAY");
+            JOptionPane.showMessageDialog(null, "THE ALARM IS NOW CANCELLED YAAAAAY");
         }
     }
 
