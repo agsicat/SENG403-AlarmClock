@@ -4,7 +4,7 @@
  * It contains the Graphic User Interface for the Alarm Clock
  *
  * @author Francisco Garcia
- * @version 0.8
+ * @version 1.0
  */
 
 import java.awt.*;
@@ -39,8 +39,6 @@ public class Gui extends JFrame implements ActionListener{
         //Initialize JPanel of the GUI
         panel = new JPanel();
         panel.setLayout(null);;
-
-
 
         //Initialize the first JButton of the GUI
         btnSwitch = new JButton("Switch");
@@ -83,16 +81,27 @@ public class Gui extends JFrame implements ActionListener{
         if (second != time.get(Calendar.SECOND)) {
             if (time.get(Calendar.AM_PM) == 1) {
                 AMPM = "PM";
-            } else {
+            }
+
+            else {
                 AMPM = "AM";
             }
         }
 
-        String temp =  time.get(Calendar.HOUR) + ":" + time.get(Calendar.MINUTE) + ":" +time.get(Calendar.SECOND) + " " + AMPM;
+
+        String temp;
+
+        if(time.get(Calendar.HOUR) == 0){
+            temp =  12 + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " " + AMPM;
+        }
+        else {
+            temp =  time.get(Calendar.HOUR) + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " " + AMPM;
+        }
 
         return temp;
     }
 
+    
     @Override
     /**
      * Function allows the GUI to respond to an action performed
@@ -117,11 +126,11 @@ public class Gui extends JFrame implements ActionListener{
      * @param args      Command Line Arguments
      */
     public static void main (String[] args){
-            Gui g = new Gui();
-            while(true){
-            	String date = g.getTime();
-            	g.label.setText(date);
-            	g.repaint();
-            }
+        Gui g = new Gui();
+        while(true){
+            String date = g.getTime();
+            g.label.setText(date);
+            g.repaint();
+        }
     }
 }
