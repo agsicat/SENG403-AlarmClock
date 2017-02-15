@@ -22,6 +22,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     private JPanel panel;
     private JButton btnSwitch, btnAlarm;
     private JLabel label;
+    private boolean doAnalogDisplay = false;
     
     //storage for the alarms in the system
     private static threadSpawner alarms = new threadSpawner();
@@ -116,7 +117,8 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         String temp = e.getActionCommand();
 
         if(temp == "Switch"){
-            JOptionPane.showMessageDialog(null, "Analog/Digital");
+            //JOptionPane.showMessageDialog(null, "Analog/Digital");
+            this.doAnalogDisplay = !this.doAnalogDisplay;
         }
 
         else if(temp == "Alarm" ){
@@ -138,9 +140,14 @@ public class Gui extends JFrame implements ActionListener, Runnable{
 	public void run() {
 		// TODO Auto-generated method stub
 		 while(true){
-         	String date = this.getTime();
-         	this.label.setText(date);
-         	this.repaint();
+			 if(this.doAnalogDisplay){
+				 this.label.setText("Analog Display");
+			 }
+			 else{
+				 String date = this.getTime();
+		         	this.label.setText(date);
+			 }
+         	 this.repaint();
          }
 	}
 }
