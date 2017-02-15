@@ -74,7 +74,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     /**
      *  Function returns the time of the users machine
      *
-     *  @return   temp      String containing the current time
+     *  @return String containing the current time
      */
 
     public String getTime(){
@@ -116,8 +116,8 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     public void actionPerformed(ActionEvent e) {
         String temp = e.getActionCommand();
 
+        //this button changes whether the time should be displayed in an analog or digital format
         if(temp == "Switch"){
-            //JOptionPane.showMessageDialog(null, "Analog/Digital");
             this.doAnalogDisplay = !this.doAnalogDisplay;
         }
 
@@ -129,7 +129,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     /**
      * Main function of the class
      *
-     * @param args      Command Line Arguments
+     * @param args Command Line Arguments
      */
     public static void main (String[] args){
         Gui g = new Gui();
@@ -138,15 +138,19 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     
     @Override
 	public void run() {
-		// TODO Auto-generated method stub
+		
+    	 //infinite while loop updates the GUI every second so that it always displays the correct time
 		 while(true){
+			 //if the time should be displayed in an analog format
 			 if(this.doAnalogDisplay){
 				 this.label.setText("Analog Display");
 			 }
+			 //else the time should be displayed in a digital format
 			 else{
 				 String date = this.getTime();
 		         	this.label.setText(date);
 			 }
+			 //refresh the GUI to reflect the changed contents
          	 this.repaint();
          }
 	}
