@@ -3,7 +3,10 @@ import java.util.HashMap;
 /**
  * Class that creates threads and maps their IDs
  * Can also destroy a thread in the mapping given the ID
- * Version 1.2
+ * Properly dismisses and cancels alarm thread upon calling 
+ * respective "dismiss" and "cancel" functions
+ * 
+ * Version 3.0
  */
 public class threadSpawner {
 	
@@ -58,11 +61,12 @@ public class threadSpawner {
 			{
 				getThreadByID(ID).alarm.setCheckRing(false);
 				getThreadByID(ID).alarm.setAlarmSet(false);
+				this.stopThread(ID);
 				System.out.println("The current alarm has been dismissed");
 			}
 		}
 	
-		// Matteo Molnar: method called when an alarm is to be cancelled, sets alarmSet to false
+	// Matteo Molnar: method called when an alarm is to be cancelled, sets alarmSet to false
 		public void cancelAlarm(Long ID) {
 			if (getThreadByID(ID).alarm.getAlarmSet() == false)
 				System.out.println("No alarm is set to cancel");
@@ -71,6 +75,7 @@ public class threadSpawner {
 				getThreadByID(ID).alarm.setAlarmSet(false);
 				getThreadByID(ID).alarm.setInputHour(0);
 				getThreadByID(ID).alarm.setInputMinute(0);
+				this.stopThread(ID);
 				System.out.println("The current alarm has been cancelled");
 			}
 		}
