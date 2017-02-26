@@ -117,7 +117,7 @@ public class Gui extends JFrame implements ActionListener{
         else if(temp == "Alarm" ){
 
             JFrame frame = new JFrame("Alarm Menu");
-            frame.setSize(500, 100);
+            frame.setSize(550, 100);
             frame.setVisible(true);
             frame.setResizable(false);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -137,6 +137,7 @@ public class Gui extends JFrame implements ActionListener{
 
             //Action Listener within Action Listener? How do you do that?
             JButton btn = new JButton("Save Alarm");
+            JButton cancBtn = new JButton("Cancel Alarm");
 
             Container cont = frame.getContentPane();
             cont.setLayout(new FlowLayout());
@@ -148,6 +149,7 @@ public class Gui extends JFrame implements ActionListener{
             cont.add(time);
 
             cont.add(btn);
+            cont.add(cancBtn);
 
         }
     }
