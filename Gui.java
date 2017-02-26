@@ -3,8 +3,7 @@
  *
  * It contains the Graphic User Interface for the Alarm Clock
  *
- * @author Francisco Garcia
- * @version 1.0
+ * @version 1.2
  */
 
 import java.awt.*;
@@ -17,9 +16,9 @@ import java.awt.event.ActionListener;
 public class Gui extends JFrame implements ActionListener{
 
     //Variables for GUI Component
-    private JFrame frame, alarmFrame;
-    private JPanel panel, alarmPanel;
-    private JButton btnSwitch, btnAlarm, btnCancel;
+    private JFrame frame;
+    private JPanel panel;
+    private JButton btnSwitch, btnAlarm;
     private JLabel label;
 
     /**
@@ -38,7 +37,7 @@ public class Gui extends JFrame implements ActionListener{
 
         //Initialize JPanel of the GUI
         panel = new JPanel();
-        panel.setLayout(null);;
+        panel.setLayout(null);
 
         //Initialize the first JButton of the GUI
         btnSwitch = new JButton("Switch");
@@ -106,7 +105,7 @@ public class Gui extends JFrame implements ActionListener{
     /**
      * Function allows the GUI to respond to an action performed
      *
-     * @param e     The action that will trigger a respone in the GUI
+     * @param e     The action that will trigger a response in the GUI
      */
     public void actionPerformed(ActionEvent e) {
         String temp = e.getActionCommand();
@@ -116,27 +115,40 @@ public class Gui extends JFrame implements ActionListener{
         }
 
         else if(temp == "Alarm" ){
-            alarmFrame = new JFrame("Alarms");
-            alarmFrame.setVisible(true);
-            alarmFrame.setSize(700, 500);
-            alarmFrame.setResizable(false);
-            alarmFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-            alarmPanel = new JPanel();
-            alarmPanel.setLayout(null);;
+            JFrame frame = new JFrame("Alarm Menu");
+            frame.setSize(500, 100);
+            frame.setVisible(true);
+            frame.setResizable(false);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            //TEST
-            btnCancel = new JButton("Cancel");
-            btnCancel.addActionListener(this);
-            btnCancel.setBounds(425, 275, 120, 35); //PLACE BUTTON SOMEWHERE ELSE
-            alarmPanel.add(btnCancel);
-            //TEST
+            //Spinner for days of the week
+            //How do you adjust the size of the text box? I did it a chicky way... Insert some spaces after Monday
+            String[] list = {"Monday       ","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"};
+            SpinnerModel model1 = new SpinnerListModel(list);
+            JSpinner day = new JSpinner(model1);
 
-            alarmFrame.add(alarmPanel);
-        }
+            //Spinner for the time
+            SpinnerModel model2 = new SpinnerDateModel(new Date(), null, null, Calendar.HOUR_OF_DAY);
+            JSpinner time = new JSpinner(model2);
 
-        else if (temp == "Cancel") {
-            JOptionPane.showMessageDialog(null, "THE ALARM IS NOW CANCELLED YAAAAAY");
+            JSpinner.DateEditor de = new JSpinner.DateEditor(time, "HH:mm");
+            time.setEditor(de);
+
+            //Action Listener within Action Listener? How do you do that?
+            JButton btn = new JButton("Save Alarm");
+
+            Container cont = frame.getContentPane();
+            cont.setLayout(new FlowLayout());
+
+            cont.add(new JLabel("Select Day:"));
+            cont.add(day);
+
+            cont.add(new JLabel("Select Time:"));
+            cont.add(time);
+
+            cont.add(btn);
+
         }
     }
 
