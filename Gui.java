@@ -120,7 +120,7 @@ public class Gui extends JFrame implements ActionListener{
             frame.setSize(550, 100);
             frame.setVisible(true);
             frame.setResizable(false);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
             //Spinner for days of the week
             //How do you adjust the size of the text box? I did it a chicky way... Insert some spaces after Monday
@@ -137,7 +137,7 @@ public class Gui extends JFrame implements ActionListener{
 
             //Action Listener within Action Listener? How do you do that?
             JButton btn = new JButton("Save Alarm");
-            JButton cancBtn = new JButton("Cancel Alarm");
+            JButton cancBtn = new JButton("Cancel");
 
             Container cont = frame.getContentPane();
             cont.setLayout(new FlowLayout());
@@ -151,6 +151,11 @@ public class Gui extends JFrame implements ActionListener{
             cont.add(btn);
             cont.add(cancBtn);
 
+        }
+
+        else if (temp == "Cancel")
+        {
+            System.out.println("TEST");
         }
     }
 
