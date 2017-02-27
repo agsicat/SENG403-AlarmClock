@@ -3,7 +3,9 @@
  *
  * It contains the Graphic User Interface for the Alarm Clock
  *
- * @version 1.2
+ * @author Francisco Garcia
+ * @Edit Aaron Kobelsky
+ * @version 2.1
  */
 
 import java.awt.*;
@@ -13,13 +15,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-public class Gui extends JFrame implements ActionListener{
+public class Gui extends JFrame implements ActionListener, Runnable{
 
     //Variables for GUI Component
     private JFrame frame;
     private JPanel panel;
     private JButton btnSwitch, btnAlarm;
     private JLabel label;
+    private boolean doAnalogDisplay = false;
+    
+    //storage for the alarms in the system
+    private static threadSpawner alarms = new threadSpawner();
 
     /**
      * Constructor
@@ -68,7 +74,7 @@ public class Gui extends JFrame implements ActionListener{
     /**
      *  Function returns the time of the users machine
      *
-     *  @return   temp      String containing the current time
+     *  @return String containing the current time
      */
 
     public String getTime(){
@@ -110,8 +116,9 @@ public class Gui extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         String temp = e.getActionCommand();
 
+        //this button changes whether the time should be displayed in an analog or digital format
         if(temp == "Switch"){
-            JOptionPane.showMessageDialog(null, "Analog/Digital");
+            this.doAnalogDisplay = !this.doAnalogDisplay;
         }
 
         else if(temp == "Alarm" ){
@@ -155,14 +162,29 @@ public class Gui extends JFrame implements ActionListener{
     /**
      * Main function of the class
      *
-     * @param args      Command Line Arguments
+     * @param args Command Line Arguments
      */
     public static void main (String[] args){
         Gui g = new Gui();
-        while(true){
-            String date = g.getTime();
-            g.label.setText(date);
-            g.repaint();
-        }
+        g.run();
     }
+    
+    @Override
+	public void run() {
+		
+    	 //infinite while loop updates the GUI every second so that it always displays the correct time
+		 while(true){
+			 //if the time should be displayed in an analog format
+			 if(this.doAnalogDisplay){
+				 this.label.setText("Analog Display");
+			 }
+			 //else the time should be displayed in a digital format
+			 else{
+				 String date = this.getTime();
+		         	this.label.setText(date);
+			 }
+			 //refresh the GUI to reflect the changed contents
+         	 this.repaint();
+         }
+	}
 }
