@@ -23,7 +23,7 @@ import java.awt.Insets;
 import java.awt.Color;
 
 
-public class DismessAlarm {
+public class DismissAlarm {
 
 	private JFrame frame;
 
@@ -34,7 +34,7 @@ public class DismessAlarm {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					DismessAlarm window = new DismessAlarm();
+					DismissAlarm window = new DismissAlarm();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -46,7 +46,7 @@ public class DismessAlarm {
 	/**
 	 * Create the application.
 	 */
-	public DismessAlarm() {
+	public DismissAlarm() {
 		initialize();
 	}
 
