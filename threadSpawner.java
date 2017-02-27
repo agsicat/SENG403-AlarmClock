@@ -6,7 +6,7 @@ import java.util.HashMap;
  * Properly dismisses and cancels alarm thread upon calling 
  * respective "dismiss" and "cancel" functions
  * 
- * Version 3.1
+ * Version 3.2
  */
 public class threadSpawner {
 	
@@ -19,12 +19,17 @@ public class threadSpawner {
 	}
 	
 	/**
-	 * Spawns a new thread and puts its ID in the hashmap
+	 * Spawns a new thread to run one alarm clock object
+	 * 
+	 * @param a		The alarm clock object
+	 * @return		The thread ID of the spawned thread
 	 */
-	public void spawnNewThread(AlarmClock a){
+	public Long spawnNewThread(AlarmClock a){
 		AlarmThread newThread = new AlarmThread(a);
 		newThread.start();
 		threadID.put(newThread.getId(), newThread);
+		
+		return newThread.getId();
 	}
 	
 	/**
