@@ -3,8 +3,7 @@
  *
  * It contains the Graphic User Interface for the Alarm Clock
  *
- * @author Francisco Garcia
- * @version 1.0
+ * @version 1.2
  */
 
 import java.awt.*;
@@ -38,7 +37,7 @@ public class Gui extends JFrame implements ActionListener{
 
         //Initialize JPanel of the GUI
         panel = new JPanel();
-        panel.setLayout(null);;
+        panel.setLayout(null);
 
         //Initialize the first JButton of the GUI
         btnSwitch = new JButton("Switch");
@@ -101,12 +100,11 @@ public class Gui extends JFrame implements ActionListener{
         return temp;
     }
 
-    
     @Override
     /**
      * Function allows the GUI to respond to an action performed
      *
-     * @param e     The action that will trigger a respone in the GUI
+     * @param e     The action that will trigger a response in the GUI
      */
     public void actionPerformed(ActionEvent e) {
         String temp = e.getActionCommand();
@@ -116,9 +114,70 @@ public class Gui extends JFrame implements ActionListener{
         }
 
         else if(temp == "Alarm" ){
-            JOptionPane.showMessageDialog(null, "Alarm Menu");
+            AlarmGUI ag = new AlarmGUI();
+            ag.run();
         }
     }
+
+
+    /**
+     *  Class creates a new object for the Alarm Menu
+     */
+    public class AlarmGUI extends JFrame implements Runnable, ActionListener{
+
+
+        public AlarmGUI(){
+
+        }
+
+        @Override
+        public void run() {
+            JFrame frame = new JFrame("Alarm Menu");
+            frame.setSize(500, 100);
+            frame.setVisible(true);
+            frame.setResizable(false);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            //Spinner for days of the week
+            //How do you adjust the size of the text box? I did it a chicky way... Insert some spaces after Monday
+            String[] list = {"Monday       ","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"};
+            SpinnerModel model1 = new SpinnerListModel(list);
+            JSpinner day = new JSpinner(model1);
+
+            //Spinner for the time
+            SpinnerModel model2 = new SpinnerDateModel(new Date(), null, null, Calendar.HOUR_OF_DAY);
+            JSpinner time = new JSpinner(model2);
+
+            JSpinner.DateEditor de = new JSpinner.DateEditor(time, "HH:mm");
+            time.setEditor(de);
+
+            //Action Listener within Action Listener? How do you do that?
+            JButton btn = new JButton("Save Alarm");
+            btn.addActionListener(this);
+
+            Container cont = frame.getContentPane();
+            cont.setLayout(new FlowLayout());
+
+            cont.add(new JLabel("Select Day:"));
+            cont.add(day);
+
+            cont.add(new JLabel("Select Time:"));
+            cont.add(time);
+
+            cont.add(btn);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            String temp = e.getActionCommand();
+            if(temp == "Save Alarm"){
+                JOptionPane.showMessageDialog(null, "Alarm Saved");
+            }
+        }
+
+    }
+
+    
+
 
     /**
      * Main function of the class
