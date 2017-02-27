@@ -137,7 +137,8 @@ public class Gui extends JFrame implements ActionListener{
 
             //Action Listener within Action Listener? How do you do that?
             JButton btn = new JButton("Save Alarm");
-            JButton cancBtn = new JButton("Cancel");
+            JButton cancelBtn = new JButton("Cancel");
+            cancelBtn.addActionListener(this);
 
             Container cont = frame.getContentPane();
             cont.setLayout(new FlowLayout());
@@ -149,13 +150,14 @@ public class Gui extends JFrame implements ActionListener{
             cont.add(time);
 
             cont.add(btn);
-            cont.add(cancBtn);
+            cont.add(cancelBtn);
 
         }
 
         else if (temp == "Cancel")
         {
-            System.out.println("TEST");
+            // DOESN'T WORK, ACTIONLISTENER WITHIN AN ACTIONLISTENER
+            System.out.println("SHOULD CANCEL ALARM");
         }
     }
 
