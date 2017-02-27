@@ -156,7 +156,15 @@ public class Gui extends JFrame implements ActionListener{
 
         else if (temp == "Cancel")
         {
-            // DOESN'T WORK, ACTIONLISTENER WITHIN AN ACTIONLISTENER
+            /*
+                CANCEL ACTIONLISTENER FUNCTIONALITY
+
+                Alarm will be saved in an AlarmClock object which will be passed
+                to a threadSpawner object. The cancel part of the actionListener
+                should have access to the threadSpawner object to call the
+                cancelAlarm function for that specific thread.
+            */
+
             System.out.println("SHOULD CANCEL ALARM");
         }
     }
