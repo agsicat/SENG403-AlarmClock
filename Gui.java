@@ -132,6 +132,9 @@ public class Gui extends JFrame implements ActionListener, Runnable{
      */
     public class AlarmGUI extends JFrame implements Runnable, ActionListener{
 
+    	public Date alarmtime = new Date();
+    	public boolean end = false;
+    	public JSpinner time;
 
         public AlarmGUI(){
 
@@ -143,7 +146,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             frame.setSize(500, 100);
             frame.setVisible(true);
             frame.setResizable(false);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
             //Spinner for days of the week
             //How do you adjust the size of the text box? I did it a chicky way... Insert some spaces after Monday
@@ -152,8 +155,8 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             JSpinner day = new JSpinner(model1);
 
             //Spinner for the time
-            SpinnerModel model2 = new SpinnerDateModel(new Date(), null, null, Calendar.HOUR_OF_DAY);
-            JSpinner time = new JSpinner(model2);
+            SpinnerModel model2 = new SpinnerDateModel(alarmtime, null, null, Calendar.HOUR_OF_DAY);
+            time = new JSpinner(model2);
 
             JSpinner.DateEditor de = new JSpinner.DateEditor(time, "HH:mm");
             time.setEditor(de);
@@ -177,7 +180,13 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         public void actionPerformed(ActionEvent e) {
             String temp = e.getActionCommand();
             if(temp == "Save Alarm"){
-                JOptionPane.showMessageDialog(null, "Alarm Saved");
+            	Date date = (Date)time.getModel().getValue();
+            	AlarmClock a = new AlarmClock();
+            	a.setInputHour(date.getHours());
+            	a.setInputMinute(date.getMinutes());
+            	a.setAlarmSet(true);
+            	alarms.spawnNewThread(a);
+                JOptionPane.showMessageDialog(null, "Alarm set for: "+date.getHours() +":"+ date.getMinutes());
             }
         }
 
