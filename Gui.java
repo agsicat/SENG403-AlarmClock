@@ -5,7 +5,7 @@
  *
  * @author Francisco Garcia
  * @Edit Aaron Kobelsky
- * @version 2.1
+ * @version 2.2
  */
 
 import java.awt.*;
@@ -106,7 +106,6 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         return temp;
     }
 
-    
     @Override
     /**
      * Function allows the GUI to respond to an action performed
@@ -122,7 +121,24 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         }
 
         else if(temp == "Alarm" ){
+            AlarmGUI ag = new AlarmGUI();
+            ag.run();
+        }
+    }
 
+
+    /**
+     *  Class creates a new object for the Alarm Menu
+     */
+    public class AlarmGUI extends JFrame implements Runnable, ActionListener{
+
+
+        public AlarmGUI(){
+
+        }
+
+        @Override
+        public void run() {
             JFrame frame = new JFrame("Alarm Menu");
             frame.setSize(500, 100);
             frame.setVisible(true);
@@ -144,6 +160,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
 
             //Action Listener within Action Listener? How do you do that?
             JButton btn = new JButton("Save Alarm");
+            btn.addActionListener(this);
 
             Container cont = frame.getContentPane();
             cont.setLayout(new FlowLayout());
@@ -155,9 +172,19 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             cont.add(time);
 
             cont.add(btn);
-
         }
+
+        public void actionPerformed(ActionEvent e) {
+            String temp = e.getActionCommand();
+            if(temp == "Save Alarm"){
+                JOptionPane.showMessageDialog(null, "Alarm Saved");
+            }
+        }
+
     }
+
+    
+
 
     /**
      * Main function of the class
