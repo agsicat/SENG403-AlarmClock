@@ -1,3 +1,4 @@
+
 /**
  * Class Gui
  *
@@ -10,257 +11,265 @@
 
 import java.awt.*;
 import java.util.*;
+import java.util.Timer;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 
+public class Gui extends JFrame implements ActionListener, Runnable {
 
-public class Gui extends JFrame implements ActionListener, Runnable{
+	// Variables for GUI Component
+	private JFrame frame;
+	private JPanel panel;
+	private JButton btnSwitch, btnAlarm;
+	private JLabel label;
+	private boolean doAnalogDisplay = false;
 
-    //Variables for GUI Component
-    private JFrame frame;
-    private JPanel panel;
-    private JButton btnSwitch, btnAlarm;
-    private JLabel label;
-    private boolean doAnalogDisplay = false;
+	// storage for the alarms in the system
+	private static threadSpawner alarms = new threadSpawner();
+	private long alarmID;
 
-    //storage for the alarms in the system
-    private static threadSpawner alarms = new threadSpawner();
-    private long alarmID;
+	/**
+	 * Constructor
+	 *
+	 * It creates an instance of the Graphic User Interface
+	 */
+	public Gui() {
 
-    /**
-     * Constructor
-     *
-     * It creates an instance of the Graphic User Interface
-     */
-    public Gui(){
+		// Initialize JFrame of the GUI
+		frame = new JFrame("Alarm Clock");
+		frame.setVisible(true);
+		frame.setSize(700, 500);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        //Initialize JFrame of the GUI
-        frame = new JFrame("Alarm Clock");
-        frame.setVisible(true);
-        frame.setSize(700, 500);
-        frame.setResizable(false);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// Initialize JPanel of the GUI
+		panel = new JPanel();
+		panel.setLayout(null);
 
-        //Initialize JPanel of the GUI
-        panel = new JPanel();
-        panel.setLayout(null);
+		// Initialize the first JButton of the GUI
+		btnSwitch = new JButton("Switch");
+		btnSwitch.addActionListener(this);
+		btnSwitch.setBounds(175, 375, 120, 35);
+		panel.add(btnSwitch);
 
-        //Initialize the first JButton of the GUI
-        btnSwitch = new JButton("Switch");
-        btnSwitch.addActionListener(this);
-        btnSwitch.setBounds(175, 375, 120, 35);
-        panel.add(btnSwitch);
+		// Initialize the second JButton of the GUI
+		btnAlarm = new JButton("Alarm");
+		btnAlarm.addActionListener(this);
+		btnAlarm.setBounds(425, 375, 120, 35);
+		panel.add(btnAlarm);
 
-        //Initialize the second JButton of the GUI
-        btnAlarm = new JButton("Alarm");
-        btnAlarm.addActionListener(this);
-        btnAlarm.setBounds(425, 375, 120, 35);
-        panel.add(btnAlarm);
+		// Initialize the label, it contains the time
+		String date = getTime();
+		label = new JLabel(date);
+		label.setBounds(250, 100, 300, 200);
+		label.setFont(new Font("Serif", Font.PLAIN, 54));
+		panel.add(label);
 
+		// Add panel to frame
+		frame.add(panel);
 
-        //Initialize the label, it contains the time
-        String date = getTime();
-        label = new JLabel(date);
-        label.setBounds(250, 100, 300, 200);
-        label.setFont(new Font("Serif", Font.PLAIN, 54));
-        panel.add(label);
+	}
 
-        //Add panel to frame
-        frame.add(panel);
+	/**
+	 * Function returns the time of the users machine
+	 *
+	 * @return String containing the current time
+	 */
 
+	public String getTime() {
 
-    }
+		int second = -1;
+		String AMPM = "";
+		Calendar time = new GregorianCalendar();
 
-    /**
-     *  Function returns the time of the users machine
-     *
-     *  @return String containing the current time
-     */
+		if (second != time.get(Calendar.SECOND)) {
+			if (time.get(Calendar.AM_PM) == 1) {
+				AMPM = "PM";
+			}
 
-    public String getTime(){
+			else {
+				AMPM = "AM";
+			}
+		}
 
-        int second = -1;
-        String AMPM = "";
-        Calendar time = new GregorianCalendar();
+		String temp;
 
-        if (second != time.get(Calendar.SECOND)) {
-            if (time.get(Calendar.AM_PM) == 1) {
-                AMPM = "PM";
-            }
+		if (time.get(Calendar.HOUR) == 0) {
+			temp = 12 + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " " + AMPM;
+		} else {
+			temp = time.get(Calendar.HOUR) + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " "
+					+ AMPM;
+		}
 
-            else {
-                AMPM = "AM";
-            }
-        }
+		return temp;
+	}
 
+	@Override
+	/**
+	 * Function allows the GUI to respond to an action performed
+	 *
+	 * @param e
+	 *            The action that will trigger a response in the GUI
+	 */
+	public void actionPerformed(ActionEvent e) {
+		String temp = e.getActionCommand();
 
-        String temp;
+		// this button changes whether the time should be displayed in an analog
+		// or digital format
+		if (temp == "Switch") {
+			this.doAnalogDisplay = !this.doAnalogDisplay;
+		}
 
-        if(time.get(Calendar.HOUR) == 0){
-            temp =  12 + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " " + AMPM;
-        }
-        else {
-            temp =  time.get(Calendar.HOUR) + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " " + AMPM;
-        }
+		else if (temp == "Alarm") {
 
-        return temp;
-    }
+			JFrame frame = new JFrame("Alarm Menu");
+			frame.setSize(500, 100);
+			frame.setVisible(true);
+			frame.setResizable(false);
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    
-    @Override
-    /**
-     * Function allows the GUI to respond to an action performed
-     *
-     * @param e     The action that will trigger a response in the GUI
-     */
-    public void actionPerformed(ActionEvent e) {
-        String temp = e.getActionCommand();
+			// Spinner for days of the week
+			// How do you adjust the size of the text box? I did it a chicky
+			// way... Insert some spaces after Monday
+			String[] list = { "Monday       ", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+			SpinnerModel model1 = new SpinnerListModel(list);
+			JSpinner day = new JSpinner(model1);
 
-        //this button changes whether the time should be displayed in an analog or digital format
-        if(temp == "Switch"){
-            this.doAnalogDisplay = !this.doAnalogDisplay;
-        }
+			// Spinner for the time
+			SpinnerModel model2 = new SpinnerDateModel(new Date(), null, null, Calendar.HOUR_OF_DAY);
+			JSpinner time = new JSpinner(model2);
 
-        else if(temp == "Alarm" ){
+			JSpinner.DateEditor de = new JSpinner.DateEditor(time, "HH:mm");
+			time.setEditor(de);
 
-            JFrame frame = new JFrame("Alarm Menu");
-            frame.setSize(500, 100);
-            frame.setVisible(true);
-            frame.setResizable(false);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			// Action Listener within Action Listener? How do you do that?
+			JButton btn = new JButton("Save Alarm");
 
-            //Spinner for days of the week
-            //How do you adjust the size of the text box? I did it a chicky way... Insert some spaces after Monday
-            String[] list = {"Monday       ","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"};
-            SpinnerModel model1 = new SpinnerListModel(list);
-            JSpinner day = new JSpinner(model1);
+			Container cont = frame.getContentPane();
+			cont.setLayout(new FlowLayout());
 
-            //Spinner for the time
-            SpinnerModel model2 = new SpinnerDateModel(new Date(), null, null, Calendar.HOUR_OF_DAY);
-            JSpinner time = new JSpinner(model2);
+			cont.add(new JLabel("Select Day:"));
+			cont.add(day);
 
-            JSpinner.DateEditor de = new JSpinner.DateEditor(time, "HH:mm");
-            time.setEditor(de);
+			cont.add(new JLabel("Select Time:"));
+			cont.add(time);
 
-            //Action Listener within Action Listener? How do you do that?
-            JButton btn = new JButton("Save Alarm");
+			cont.add(btn);
 
-            Container cont = frame.getContentPane();
-            cont.setLayout(new FlowLayout());
+		}
+	}
 
-            cont.add(new JLabel("Select Day:"));
-            cont.add(day);
+	/**
+	 * Class creates a new object for the Alarm Menu
+	 */
+	public class AlarmGUI extends JFrame implements Runnable, ActionListener {
 
-            cont.add(new JLabel("Select Time:"));
-            cont.add(time);
+		public Date alarmtime = new Date();
+		public boolean end = false;
+		public JSpinner time;
 
-            cont.add(btn);
+		public AlarmGUI() {
 
-        }
-    }
+		}
 
+		@Override
+		public void run() {
+			JFrame frame = new JFrame("Alarm Menu");
+			frame.setSize(550, 100);
+			frame.setVisible(true);
+			frame.setResizable(false);
+			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+			// Spinner for days of the week
+			// How do you adjust the size of the text box? I did it a chicky
+			// way... Insert some spaces after Monday
+			String[] list = { "Monday       ", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+			SpinnerModel model1 = new SpinnerListModel(list);
+			JSpinner day = new JSpinner(model1);
 
-    /**
-     *  Class creates a new object for the Alarm Menu
-     */
-    public class AlarmGUI extends JFrame implements Runnable, ActionListener{
+			// Spinner for the time
+			SpinnerModel model2 = new SpinnerDateModel(alarmtime, null, null, Calendar.HOUR_OF_DAY);
+			time = new JSpinner(model2);
 
-    	public Date alarmtime = new Date();
-    	public boolean end = false;
-    	public JSpinner time;
+			JSpinner.DateEditor de = new JSpinner.DateEditor(time, "HH:mm");
+			time.setEditor(de);
 
-        public AlarmGUI(){
+			// Action Listener within Action Listener? How do you do that?
+			JButton btn = new JButton("Save Alarm");
+			JButton cancelBtn = new JButton("Cancel");
+			btn.addActionListener(this);
+			cancelBtn.addActionListener(this);
 
-        }
+			Container cont = frame.getContentPane();
+			cont.setLayout(new FlowLayout());
 
-        @Override
-        public void run() {
-            JFrame frame = new JFrame("Alarm Menu");
-            frame.setSize(550, 100);
-            frame.setVisible(true);
-            frame.setResizable(false);
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			cont.add(new JLabel("Select Day:"));
+			cont.add(day);
 
-            //Spinner for days of the week
-            //How do you adjust the size of the text box? I did it a chicky way... Insert some spaces after Monday
-            String[] list = {"Monday       ","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"};
-            SpinnerModel model1 = new SpinnerListModel(list);
-            JSpinner day = new JSpinner(model1);
+			cont.add(new JLabel("Select Time:"));
+			cont.add(time);
 
-            //Spinner for the time
-            SpinnerModel model2 = new SpinnerDateModel(alarmtime, null, null, Calendar.HOUR_OF_DAY);
-            time = new JSpinner(model2);
+			cont.add(btn);
+			cont.add(cancelBtn);
+		}
 
-            JSpinner.DateEditor de = new JSpinner.DateEditor(time, "HH:mm");
-            time.setEditor(de);
+		public void actionPerformed(ActionEvent e) {
+			String temp = e.getActionCommand();
+			if (temp == "Save Alarm") {
+				Date date = (Date) time.getModel().getValue();
+				AlarmClock a = new AlarmClock();
+				a.setInputHour(date.getHours());
+				a.setInputMinute(date.getMinutes());
+				a.setAlarmSet(true);
+				alarmID = alarms.spawnNewThread(a);
+				JOptionPane.showMessageDialog(null, "Alarm set for: " + date.getHours() + ":" + date.getMinutes());
+			}
 
-            //Action Listener within Action Listener? How do you do that?
-            JButton btn = new JButton("Save Alarm");
-            JButton cancelBtn = new JButton("Cancel");
-            btn.addActionListener(this);
-            cancelBtn.addActionListener(this);
+			else if (temp == "Cancel") {
+				alarms.cancelAlarm(alarmID);
+				JOptionPane.showMessageDialog(null, "Alarm Cancelled");
+			}
+		}
 
-            Container cont = frame.getContentPane();
-            cont.setLayout(new FlowLayout());
+	}
 
-            cont.add(new JLabel("Select Day:"));
-            cont.add(day);
+	/**
+	 * Main function of the class
+	 *
+	 * @param args
+	 *            Command Line Arguments
+	 */
+	public static void main(String[] args) {
+		Gui g = new Gui();
+		g.run();
+	}
 
-            cont.add(new JLabel("Select Time:"));
-            cont.add(time);
-
-            cont.add(btn);
-            cont.add(cancelBtn);
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            String temp = e.getActionCommand();
-            if(temp == "Save Alarm"){
-            	Date date = (Date)time.getModel().getValue();
-            	AlarmClock a = new AlarmClock();
-            	a.setInputHour(date.getHours());
-            	a.setInputMinute(date.getMinutes());
-            	a.setAlarmSet(true);
-            	alarmID = alarms.spawnNewThread(a);
-                JOptionPane.showMessageDialog(null, "Alarm set for: "+date.getHours() +":"+ date.getMinutes());
-            }
-
-            else if (temp == "Cancel") {
-                alarms.cancelAlarm(alarmID);
-                JOptionPane.showMessageDialog(null, "Alarm Cancelled");
-            }
-        }
-
-    }
-
-    /**
-     * Main function of the class
-     *
-     * @param args Command Line Arguments
-     */
-    public static void main (String[] args){
-        Gui g = new Gui();
-        g.run();
-    }
-
-    @Override
+	@Override
 	public void run() {
 
-    	 //infinite while loop updates the GUI every second so that it always displays the correct time
-		 while(true){
-			 //if the time should be displayed in an analog format
-			 if(this.doAnalogDisplay){
-				 this.label.setText("Analog Display");
-			 }
-			 //else the time should be displayed in a digital format
-			 else{
-				 String date = this.getTime();
-		         	this.label.setText(date);
-			 }
-			 //refresh the GUI to reflect the changed contents
-         	 this.repaint();
-         }
+		// infinite while loop updates the GUI every second so that it always
+		// displays the correct time
+		AnalogClock ac = new AnalogClock();
+		frame.add(ac).setVisible(false);
+		while (true) {
+			// if the time should be displayed in an analog format
+			if (this.doAnalogDisplay) {
+				this.label.setText("");
+				ac.cal = (Calendar)Calendar.getInstance(ac.timeZone);
+				frame.add(ac);
+				ac.repaint();
+			}
+			// else the time should be displayed in a digital format
+			else {
+				frame.remove(ac);
+				String date = this.getTime();
+				this.label.setText(date);
+			}
+			// refresh the GUI to reflect the changed contents
+			this.repaint();
+		}
 	}
 }
