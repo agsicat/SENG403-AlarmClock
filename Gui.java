@@ -23,9 +23,10 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     private JButton btnSwitch, btnAlarm;
     private JLabel label;
     private boolean doAnalogDisplay = false;
-    
+
     //storage for the alarms in the system
     private static threadSpawner alarms = new threadSpawner();
+    private long alarmID;
 
     /**
      * Constructor
@@ -143,7 +144,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         @Override
         public void run() {
             JFrame frame = new JFrame("Alarm Menu");
-            frame.setSize(500, 100);
+            frame.setSize(550, 100);
             frame.setVisible(true);
             frame.setResizable(false);
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -163,7 +164,9 @@ public class Gui extends JFrame implements ActionListener, Runnable{
 
             //Action Listener within Action Listener? How do you do that?
             JButton btn = new JButton("Save Alarm");
+            JButton cancelBtn = new JButton("Cancel");
             btn.addActionListener(this);
+            cancelBtn.addActionListener(this);
 
             Container cont = frame.getContentPane();
             cont.setLayout(new FlowLayout());
@@ -175,6 +178,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             cont.add(time);
 
             cont.add(btn);
+            cont.add(cancelBtn);
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -185,14 +189,19 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             	a.setInputHour(date.getHours());
             	a.setInputMinute(date.getMinutes());
             	a.setAlarmSet(true);
-            	alarms.spawnNewThread(a);
+            	alarmID = alarms.spawnNewThread(a);
                 JOptionPane.showMessageDialog(null, "Alarm set for: "+date.getHours() +":"+ date.getMinutes());
+            }
+
+            else if (temp == "Cancel") {
+                alarms.cancelAlarm(alarmID);
+                JOptionPane.showMessageDialog(null, "Alarm Cancelled");
             }
         }
 
     }
 
-    
+
 
 
     /**
@@ -204,10 +213,10 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         Gui g = new Gui();
         g.run();
     }
-    
+
     @Override
 	public void run() {
-		
+
     	 //infinite while loop updates the GUI every second so that it always displays the correct time
 		 while(true){
 			 //if the time should be displayed in an analog format
