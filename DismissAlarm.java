@@ -26,6 +26,10 @@ import java.awt.Color;
 public class DismissAlarm {
 
 	private JFrame frame;
+	
+	//storage for the alarms in the system
+	private static threadSpawner alarms = new threadSpawner();
+	private long alarmID;
 
 	/**
 	 * Launch the application.
@@ -83,6 +87,17 @@ public class DismissAlarm {
 		frame.getContentPane().add(lblAlarmTime, gbc_lblAlarmTime);
 		
 		JButton btnDismiss = new JButton("Dismiss");
+		btnDismiss.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//Passes the alarmID of current alarm to stop the thread
+				alarms.dismissAlarm(alarmID);
+				
+				//Closes window when Dismiss is selected
+				frame.dispose();
+
+			}
+		});
 		GridBagConstraints gbc_btnDismiss = new GridBagConstraints();
 		gbc_btnDismiss.insets = new Insets(0, 0, 5, 5);
 		gbc_btnDismiss.gridx = 1;
