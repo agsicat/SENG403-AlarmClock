@@ -1,22 +1,9 @@
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JComboBox;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import javax.swing.JButton;
-import javax.swing.JSpinner;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.BoxLayout;
-import java.awt.FlowLayout;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.factories.FormFactory;
 import javax.swing.JLabel;
 import java.awt.Font;
-import net.miginfocom.swing.MigLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -48,6 +35,7 @@ public class DismissAlarm {
 	 */
 	public DismissAlarm() {
 		initialize();
+		frame.setVisible(true);
 	}
 
 	/**

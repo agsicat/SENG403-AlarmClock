@@ -136,10 +136,6 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     	public boolean end = false;
     	public JSpinner time;
 
-        public AlarmGUI(){
-
-        }
-
         @Override
         public void run() {
             JFrame frame = new JFrame("Alarm Menu");
@@ -179,13 +175,17 @@ public class Gui extends JFrame implements ActionListener, Runnable{
 
         public void actionPerformed(ActionEvent e) {
             String temp = e.getActionCommand();
+            //when the save alarm button is played
             if(temp == "Save Alarm"){
+            	//retrieve the time the alarm was set for from the spinner
             	Date date = (Date)time.getModel().getValue();
+            	//create a new alarm clock and start it in a thread
             	AlarmClock a = new AlarmClock();
             	a.setInputHour(date.getHours());
             	a.setInputMinute(date.getMinutes());
             	a.setAlarmSet(true);
             	alarms.spawnNewThread(a);
+            	//display for the user what time the alarm was set for
                 JOptionPane.showMessageDialog(null, "Alarm set for: "+date.getHours() +":"+ date.getMinutes());
             }
         }
