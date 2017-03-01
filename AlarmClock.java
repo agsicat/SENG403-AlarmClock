@@ -24,8 +24,6 @@ public class AlarmClock{
 		currentTime = LocalTime.of(0, 0); 
 	}
 
-	// get the time
-	// this returns void, but will eventually return int
 
 	public LocalTime checkTime(){
 		currentTime = LocalTime.now();
@@ -73,29 +71,25 @@ public class AlarmClock{
 		return checkRing;
 	}
 	
-	// Matteo Molnar: method called when an alarm is to be cancelled, sets alarmSet to false
-	public void cancelAlarm() {
-		if (alarmSet == false)
-			System.out.println("No alarm is set to cancel");
-		else
-		{
-			alarmSet = false;
-			inputHour = 0;
-			inputMinute = 0;
-			System.out.println("The current alarm has been cancelled");
-		}
+	//Getter and setter functions
+	public boolean getAlarmSet(){
+		return alarmSet;
 	}
-
-	// Angela Sicat: Method called when an alarm is to be dismissed when 'ringing', sets checkAlarm to false
-	public void dismissAlarm() {
-		if (checkAlarm() == false)
-			System.out.println("An alarm is not ringing!");
-		else
-		{
-			checkRing = false;
-			alarmSet = false;
-			System.out.println("The current alarm has been dismissed");
-		}
+	
+	public void setCheckRing(boolean b){
+		this.checkRing = b;
+	}
+	
+	public void setAlarmSet(boolean b){
+		this.alarmSet = b;
+	}
+	
+	public void setInputHour(int h){
+		this.inputHour = h;
+	}
+	
+	public void setInputMinute(int m){
+		this.inputMinute = m;
 	}
 
 }
