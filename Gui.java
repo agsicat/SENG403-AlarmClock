@@ -5,7 +5,7 @@
  *
  * @author Francisco Garcia
  * @Edit Aaron Kobelsky
- * @version 2.1
+ * @version 2.2
  */
 
 import java.awt.*;
@@ -106,7 +106,6 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         return temp;
     }
 
-    
     @Override
     /**
      * Function allows the GUI to respond to an action performed
@@ -122,12 +121,32 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         }
 
         else if(temp == "Alarm" ){
+            AlarmGUI ag = new AlarmGUI();
+            ag.run();
+        }
+    }
 
+
+    /**
+     *  Class creates a new object for the Alarm Menu
+     */
+    public class AlarmGUI extends JFrame implements Runnable, ActionListener{
+
+    	public Date alarmtime = new Date();
+    	public boolean end = false;
+    	public JSpinner time;
+
+        public AlarmGUI(){
+
+        }
+
+        @Override
+        public void run() {
             JFrame frame = new JFrame("Alarm Menu");
             frame.setSize(500, 100);
             frame.setVisible(true);
             frame.setResizable(false);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
             //Spinner for days of the week
             //How do you adjust the size of the text box? I did it a chicky way... Insert some spaces after Monday
@@ -136,14 +155,15 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             JSpinner day = new JSpinner(model1);
 
             //Spinner for the time
-            SpinnerModel model2 = new SpinnerDateModel(new Date(), null, null, Calendar.HOUR_OF_DAY);
-            JSpinner time = new JSpinner(model2);
+            SpinnerModel model2 = new SpinnerDateModel(alarmtime, null, null, Calendar.HOUR_OF_DAY);
+            time = new JSpinner(model2);
 
             JSpinner.DateEditor de = new JSpinner.DateEditor(time, "HH:mm");
             time.setEditor(de);
 
             //Action Listener within Action Listener? How do you do that?
             JButton btn = new JButton("Save Alarm");
+            btn.addActionListener(this);
 
             Container cont = frame.getContentPane();
             cont.setLayout(new FlowLayout());
@@ -155,9 +175,25 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             cont.add(time);
 
             cont.add(btn);
-
         }
+
+        public void actionPerformed(ActionEvent e) {
+            String temp = e.getActionCommand();
+            if(temp == "Save Alarm"){
+            	Date date = (Date)time.getModel().getValue();
+            	AlarmClock a = new AlarmClock();
+            	a.setInputHour(date.getHours());
+            	a.setInputMinute(date.getMinutes());
+            	a.setAlarmSet(true);
+            	alarms.spawnNewThread(a);
+                JOptionPane.showMessageDialog(null, "Alarm set for: "+date.getHours() +":"+ date.getMinutes());
+            }
+        }
+
     }
+
+    
+
 
     /**
      * Main function of the class
