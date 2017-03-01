@@ -253,7 +253,6 @@ public class Gui extends JFrame implements ActionListener, Runnable {
 		// infinite while loop updates the GUI every second so that it always
 		// displays the correct time
 		AnalogClock ac = new AnalogClock();
-		frame.add(ac).setVisible(false);
 		while (true) {
 			// if the time should be displayed in an analog format
 			if (this.doAnalogDisplay) {
