@@ -91,9 +91,6 @@ public class AlarmClock{
 	public void setInputMinute(int m){
 		this.inputMinute = m;
 	}
-<<<<<<< HEAD
 
 }
-=======
-}
->>>>>>> refs/remotes/origin/master
+
