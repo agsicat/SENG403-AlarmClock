@@ -1,5 +1,3 @@
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -16,14 +14,12 @@ public class DismissAlarm {
 
 	private JFrame frame;
 	
-	//storage for the alarms in the system
-	private static threadSpawner alarms = new threadSpawner();
 	private long alarmID;
 
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -34,20 +30,20 @@ public class DismissAlarm {
 				}
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Create the application.
 	 */
-	public DismissAlarm() {
-		initialize();
+	public DismissAlarm(long ID) {
+		initialize(ID);
 		frame.setVisible(true);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize(long ID) {
 		frame = new JFrame();
 		frame.getContentPane().setForeground(Color.BLACK);
 		frame.setBounds(100, 100, 450, 300);
@@ -76,20 +72,22 @@ public class DismissAlarm {
 		gbc_lblAlarmTime.gridy = 2;
 		frame.getContentPane().add(lblAlarmTime, gbc_lblAlarmTime);
 		
-		/*JButton btnDismiss = new JButton("Dismiss");
+		JButton btnDismiss = new JButton("Dismiss");
 		btnDismiss.addActionListener(new RandomActionListener());
 		GridBagConstraints gbc_btnDismiss = new GridBagConstraints();
 		gbc_btnDismiss.insets = new Insets(0, 0, 5, 5);
 		gbc_btnDismiss.gridx = 1;
 		gbc_btnDismiss.gridy = 3;
-		frame.getContentPane().add(btnDismiss, gbc_btnDismiss);*/
+		frame.getContentPane().add(btnDismiss, gbc_btnDismiss);
+		
+		alarmID = ID;
 	}
 	
 	public class RandomActionListener implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
 			
 			//Passes the alarmID of current alarm to stop the thread
-			alarms.dismissAlarm(alarmID);
+			Gui.alarms.dismissAlarm(alarmID);
 			
 			//Closes window when Dismiss is selected
 			frame.dispose();
