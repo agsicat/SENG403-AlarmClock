@@ -144,7 +144,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         @Override
         public void run() {
             JFrame frame = new JFrame("Alarm Menu");
-            frame.setSize(550, 100);
+            frame.setSize(650, 100);
             frame.setVisible(true);
             frame.setResizable(false);
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -167,6 +167,9 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             JButton cancelBtn = new JButton("Cancel");
             btn.addActionListener(this);
             cancelBtn.addActionListener(this);
+            
+            JButton rbtn = new JButton("Dismiss");
+            rbtn.addActionListener(this);
 
             Container cont = frame.getContentPane();
             cont.setLayout(new FlowLayout());
@@ -178,6 +181,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             cont.add(time);
 
             cont.add(btn);
+            cont.add(rbtn);
             cont.add(cancelBtn);
         }
 
@@ -196,6 +200,11 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             else if (temp == "Cancel") {
                 alarms.cancelAlarm(alarmID);
                 JOptionPane.showMessageDialog(null, "Alarm Cancelled");
+            }
+            
+            else if (temp == "Dismiss"){
+            		alarms.dismissAlarm(alarmID);
+                    JOptionPane.showMessageDialog(null, "Alarm Dismissed");
             }
         }
 
