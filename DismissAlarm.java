@@ -1,22 +1,9 @@
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JComboBox;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import javax.swing.JButton;
-import javax.swing.JSpinner;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.BoxLayout;
-import java.awt.FlowLayout;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.factories.FormFactory;
 import javax.swing.JLabel;
 import java.awt.Font;
-import net.miginfocom.swing.MigLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -26,6 +13,10 @@ import java.awt.Color;
 public class DismissAlarm {
 
 	private JFrame frame;
+	
+	//storage for the alarms in the system
+	private static threadSpawner alarms = new threadSpawner();
+	private long alarmID;
 
 	/**
 	 * Launch the application.
@@ -48,6 +39,7 @@ public class DismissAlarm {
 	 */
 	public DismissAlarm() {
 		initialize();
+		frame.setVisible(true);
 	}
 
 	/**
@@ -57,7 +49,7 @@ public class DismissAlarm {
 		frame = new JFrame();
 		frame.getContentPane().setForeground(Color.BLACK);
 		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{100, 250, 100, 0};
 		gridBagLayout.rowHeights = new int[]{85, 0, 25, 0, 23, 0};
@@ -83,6 +75,17 @@ public class DismissAlarm {
 		frame.getContentPane().add(lblAlarmTime, gbc_lblAlarmTime);
 		
 		JButton btnDismiss = new JButton("Dismiss");
+		btnDismiss.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//Passes the alarmID of current alarm to stop the thread
+				alarms.dismissAlarm(alarmID);
+				
+				//Closes window when Dismiss is selected
+				frame.dispose();
+
+			}
+		});
 		GridBagConstraints gbc_btnDismiss = new GridBagConstraints();
 		gbc_btnDismiss.insets = new Insets(0, 0, 5, 5);
 		gbc_btnDismiss.gridx = 1;
