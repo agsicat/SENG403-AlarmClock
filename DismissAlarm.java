@@ -1,22 +1,9 @@
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JComboBox;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import javax.swing.JButton;
-import javax.swing.JSpinner;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.BoxLayout;
-import java.awt.FlowLayout;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.factories.FormFactory;
 import javax.swing.JLabel;
 import java.awt.Font;
-import net.miginfocom.swing.MigLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -52,6 +39,7 @@ public class DismissAlarm {
 	 */
 	public DismissAlarm() {
 		initialize();
+		frame.setVisible(true);
 	}
 
 	/**
@@ -61,7 +49,7 @@ public class DismissAlarm {
 		frame = new JFrame();
 		frame.getContentPane().setForeground(Color.BLACK);
 		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{100, 250, 100, 0};
 		gridBagLayout.rowHeights = new int[]{85, 0, 25, 0, 23, 0};
