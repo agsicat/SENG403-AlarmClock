@@ -6,10 +6,13 @@ import java.time.LocalDateTime;
 import java.time.Month;
 
 // Jenny Le: Implemented AlarmClock
+// Edited By: Aaron Kobelsky
 public class AlarmClock{
 
 	private LocalDate currentDate;
 	private LocalTime currentTime;
+	
+	private DismissAlarm d;
 	
 	private int inputHour;
 	private int inputMinute;
@@ -31,6 +34,10 @@ public class AlarmClock{
 		return currentTime;
 	}
 	
+	@Deprecated
+	/**
+	 * No longer needed after sprint 2
+	 */
 	public void setAlarm(){
 		
 		alarmSet = true;
@@ -50,24 +57,30 @@ public class AlarmClock{
 	// see if it rings or not
 
 	public boolean checkAlarm(){
-		
-		if(alarmSet == false){
-			System.out.println("An alarm has not been set");
+		if(!checkRing){
+			if(alarmSet == false){
+				//this should be replaced by an exception in later versions
+				System.out.println("An alarm has not been set");
+				return checkRing;
+			} 
+			
+			currentTime = LocalTime.now(); // update and get current time 
+			int hour = currentTime.getHour();
+			int minute = currentTime.getMinute();
+			
+			// check if hour and minute is equal to alarm
+			if ((hour == inputHour) && (minute == inputMinute)){
+				checkRing = true;
+				//spawn the ringing alarm gui, in future will play ringtone as well
+				d = new DismissAlarm();
+				
+				//System.out.println("Ring ring ring! Alarm going off! It is " + hour + ":" + minute);
+				return checkRing;
+			} 
+			//do nothing
+			//System.out.println("It is not time to ring");
 			return checkRing;
-		} 
-		
-		currentTime = LocalTime.now(); // update and get current time 
-		int hour = currentTime.getHour();
-		int minute = currentTime.getMinute();
-		
-		// check if hour and minute is equal to alarm
-		if ((hour == inputHour) && (minute == inputMinute)){
-			checkRing = true;
-			System.out.println("Ring ring ring! Alarm going off! It is " + hour + ":" + minute);
-			return checkRing;
-		} 
-		
-		System.out.println("It is not time to ring");
+		}
 		return checkRing;
 	}
 	
