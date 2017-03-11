@@ -5,10 +5,13 @@ import java.util.HashMap;
  * Can also destroy a thread in the mapping given the ID
  * Properly dismisses and cancels alarm thread upon calling
  * respective "dismiss" and "cancel" functions
+ * 
+ * New in version 4.0
+ * Change alarm function
  *
  * @author Jeff
  * @edit Aaron Kobelsky
- * Version 3.3
+ * @version 4.0
  **/
 public class threadSpawner {
 
@@ -87,5 +90,35 @@ public class threadSpawner {
 			this.stopThread(id);
 			System.out.println("The current alarm has been cancelled");
 		}
+	}
+
+	/**
+	 * Changes the time of an alarm
+	 * @param id		ID of the alarm to be changed
+	 * @param hour		New hour to be set (put 0 if not changing)
+	 * @param minute	New minute to be set (put 0 if not changing)
+	 */
+	public void changeAlarm(Long id, int hour, int minute){
+		boolean changed = false;
+		if(hour > 0){
+			this.changehour(id, hour);
+			changed = true;
+		}
+		if(minute > 0){
+			this.changeminute(id, minute);
+			changed = true;
+		}
+		if(changed == false){
+			//Used for testing purposes only
+			System.out.println("Alarm has not changed or an error has occured");
+		}
+	}
+	
+	private void changehour(Long id, int hour){
+		getThreadByID(id).alarm.setInputHour(hour);
+	}
+	
+	private void changeminute(Long id, int minute){
+		getThreadByID(id).alarm.setInputMinute(minute);
 	}
 }
