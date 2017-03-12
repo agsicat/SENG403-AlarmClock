@@ -5,8 +5,15 @@ import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.time.Month;
 
-// Jenny Le: Implemented AlarmClock
-// Edited By: Aaron Kobelsky
+/**
+ * Object which acts as an alarm clock.
+ * Contains a predetermined time at which it should ring.
+ * Provides functionality for whether it is time to ring or not.
+ * 
+ * @author Jenny Le
+ * @edit Aaron Kobelsky
+ * @version 3.1
+ */
 public class AlarmClock{
 
 	private LocalDate currentDate;
@@ -16,15 +23,28 @@ public class AlarmClock{
 	
 	private int inputHour;
 	private int inputMinute;
+	private Calendar inputDate;
 	
 	private boolean alarmSet = false;
 	private boolean checkRing = false;
+	
+	private boolean repeatDaily = false;
+	private boolean repeatWeekly = false;
+	
+	//unique identification number for each alarm
+	private long alarmID;
+	
+	//label to identify each alarm
+	private String alarmLabel;
 
 	// constructor
 
 	AlarmClock(){
 		currentDate = LocalDate.of(2017,1,1);
 		currentTime = LocalTime.of(0, 0); 
+		
+		//Initialize the ID to be the unique HashCode of this object
+		alarmID = System.identityHashCode(this);
 	}
 
 
@@ -72,7 +92,7 @@ public class AlarmClock{
 			if ((hour == inputHour) && (minute == inputMinute)){
 				checkRing = true;
 				//spawn the ringing alarm gui, in future will play ringtone as well
-				d = new DismissAlarm();
+				d = new DismissAlarm(alarmID);
 				
 				//System.out.println("Ring ring ring! Alarm going off! It is " + hour + ":" + minute);
 				return checkRing;
@@ -103,6 +123,14 @@ public class AlarmClock{
 	
 	public void setInputMinute(int m){
 		this.inputMinute = m;
+	}
+	
+	public long getAlarmID(){
+		return this.alarmID;
+	}
+	
+	public void setAlarmLabel(String label){
+		this.alarmLabel = label;
 	}
 
 }
