@@ -26,6 +26,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
 
     //storage for the alarms in the system
     public static threadSpawner alarms = new threadSpawner();
+    AlarmClock a;
 
     /**
      * Constructor
@@ -97,14 +98,14 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         String temp;
         String tempminute = "";
         String tempsecond = "";
-        
+
         if(10 > (int)time.get(Calendar.MINUTE)){
         	tempminute = "0"+time.get(Calendar.MINUTE);
         }
         else{
         	tempminute += time.get(Calendar.MINUTE);
         }
-        
+
         if(10 > (int)time.get(Calendar.SECOND)){
         	tempsecond = "0"+time.get(Calendar.SECOND);
         }
@@ -200,7 +201,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             String temp = e.getActionCommand();
             if(temp == "Save Alarm"){
             	Date date = (Date)time.getModel().getValue();
-            	AlarmClock a = new AlarmClock();
+            	a = new AlarmClock();
             	a.setInputHour(date.getHours());
             	a.setInputMinute(date.getMinutes());
             	a.setAlarmSet(true);
@@ -209,7 +210,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             }
 
             else if (temp == "Cancel") {
-                //alarms.cancelAlarm(alarmID);
+                alarms.cancelAlarm(a.getAlarmID());
                 JOptionPane.showMessageDialog(null, "Alarm Cancelled");
             }
         }
