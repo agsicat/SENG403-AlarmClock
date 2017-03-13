@@ -5,7 +5,7 @@
  *
  * @author Francisco Garcia
  * @Edit Aaron Kobelsky
- * @version 2.2
+ * @version 3.2
  */
 
 import java.awt.*;
@@ -25,8 +25,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     private boolean doAnalogDisplay = false;
 
     //storage for the alarms in the system
-    private static threadSpawner alarms = new threadSpawner();
-    private long alarmID;
+    public static threadSpawner alarms = new threadSpawner();
 
     /**
      * Constructor
@@ -96,12 +95,28 @@ public class Gui extends JFrame implements ActionListener, Runnable{
 
 
         String temp;
+        String tempminute = "";
+        String tempsecond = "";
+        
+        if(10 > (int)time.get(Calendar.MINUTE)){
+        	tempminute = "0"+time.get(Calendar.MINUTE);
+        }
+        else{
+        	tempminute += time.get(Calendar.MINUTE);
+        }
+        
+        if(10 > (int)time.get(Calendar.SECOND)){
+        	tempsecond = "0"+time.get(Calendar.SECOND);
+        }
+        else{
+        	tempsecond += time.get(Calendar.SECOND);
+        }
 
         if(time.get(Calendar.HOUR) == 0){
-            temp =  12 + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " " + AMPM;
+            temp =  12 + ":" + tempminute + ":" + tempsecond + " " + AMPM;
         }
         else {
-            temp =  time.get(Calendar.HOUR) + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " " + AMPM;
+            temp =  time.get(Calendar.HOUR) + ":" + tempminute + ":" + tempsecond + " " + AMPM;
         }
 
         return temp;
@@ -144,7 +159,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         @Override
         public void run() {
             JFrame frame = new JFrame("Alarm Menu");
-            frame.setSize(550, 100);
+            frame.setSize(650, 100);
             frame.setVisible(true);
             frame.setResizable(false);
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -189,12 +204,12 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             	a.setInputHour(date.getHours());
             	a.setInputMinute(date.getMinutes());
             	a.setAlarmSet(true);
-            	alarmID = alarms.spawnNewThread(a);
+            	alarms.spawnNewThread(a);
                 JOptionPane.showMessageDialog(null, "Alarm set for: "+date.getHours() +":"+ date.getMinutes());
             }
 
             else if (temp == "Cancel") {
-                alarms.cancelAlarm(alarmID);
+                //alarms.cancelAlarm(alarmID);
                 JOptionPane.showMessageDialog(null, "Alarm Cancelled");
             }
         }
