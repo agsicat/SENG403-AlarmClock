@@ -1,3 +1,4 @@
+
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -5,45 +6,32 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JButton;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.AbstractListModel;
 import javax.swing.JScrollPane;
 import javax.swing.JScrollBar;
+import javax.swing.DefaultListModel;
 
 
-public class AlarmsViewer {
+public class AlarmsViewer extends JFrame implements Runnable, ActionListener{
 
-	private JFrame frame;
+	AlarmClock a;
+    public static threadSpawner alarms;
+    DefaultListModel<String> dlm;
 
-	/**
-	 * Launch the application.
-	 */
-	public void _Run() {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AlarmsViewer window = new AlarmsViewer();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+	public AlarmsViewer(AlarmClock param1, threadSpawner param2){
+	    this.a = param1;
+	    this.alarms = param2;
 	}
 
-	/**
-	 * Create the application.
-	 */
-	public AlarmsViewer() {
-		initialize();
-	}
-
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-		frame = new JFrame();
+	@Override
+	public void run() {
+		JFrame frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
 		JLabel lblAlarms = new JLabel("Alarms");
@@ -55,25 +43,45 @@ public class AlarmsViewer {
 		scrollPane.setBounds(48, 51, 341, 115);
 		frame.getContentPane().add(scrollPane);
 
-		JList list = new JList();
+        dlm = new DefaultListModel<>();
+		dlm.addElement(String.valueOf(a.getInputHour()) + ":" + String.valueOf(a.getInputMinute()));
+		//Update an element
+		//dlm.set(1, "test3");
+
+		JList<String> list = new JList<>(dlm);
 		scrollPane.setViewportView(list);
-		list.setValueIsAdjusting(true);
-		list.setModel(new AbstractListModel() {
-			String[] values = new String[] {"ex 1", "ex 2", "ex 3", "ex 4", "ex 5", "ex 6", "ex 7", "ex 8", "ex 9", "ex 10"};
-			public int getSize() {
-				return values.length;
-			}
-			public Object getElementAt(int index) {
-				return values[index];
-			}
-		});
 
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.setBounds(279, 193, 89, 23);
+		btnCancel.addActionListener(this);
 		frame.getContentPane().add(btnCancel);
 
 		JButton btnEdit = new JButton("Edit");
 		btnEdit.setBounds(66, 193, 89, 23);
+        btnEdit.addActionListener(this);
 		frame.getContentPane().add(btnEdit);
 	}
+
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String temp = e.getActionCommand();
+
+		if (temp == "Edit"){
+            alarms.cancelAlarm(a.getAlarmID());
+
+			AlarmGUI ag = new AlarmGUI(a, alarms);
+			ag.run();
+
+            dlm.addElement(String.valueOf(ag.getReturnHour()) + ":" + String.valueOf(ag.getReturnMinute()));
+
+
+		}
+        else if (temp == "Cancel") {
+            alarms.cancelAlarm(a.getAlarmID());
+            dlm.set(0, "");
+        }
+	}
+
+
 }
