@@ -121,14 +121,6 @@ public class AlarmClock{
 		this.inputHour = h;
 	}
 
-	public int getInputHour(){
-		return this.inputHour;
-	}
-
-	public int getInputMinute(){
-		return this.inputMinute;
-	}
-
 	public void setInputMinute(int m){
 		this.inputMinute = m;
 	}
