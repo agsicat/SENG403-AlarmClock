@@ -23,11 +23,12 @@ public class AlarmGUI extends JFrame implements Runnable, ActionListener {
     public int returnMinute = 0;
 
     AlarmClock a;
-    public static threadSpawner alarms;
 
-    public AlarmGUI(AlarmClock param1, threadSpawner param2){
+    public long alarmID;
+
+
+    public AlarmGUI(AlarmClock param1){
         this.a = param1;
-        this.alarms = param2;
     }
 
     @Override
@@ -92,10 +93,16 @@ public class AlarmGUI extends JFrame implements Runnable, ActionListener {
             a.setInputHour(date.getHours());
             a.setInputMinute(date.getMinutes());
             a.setAlarmSet(true);
-            alarms.spawnNewThread(a);
+            alarmID = Gui.alarms.spawnNewThread(a);
             //System.out.println(a.getAlarmID());
             //System.out.println(a.getInputMinute());
-            JOptionPane.showMessageDialog(null, "Alarm set for: " + a.getInputHour() + ":" + a.getInputMinute());
+            if(a.getInputMinute() < 10){
+                JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":0" + a.getInputMinute());
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":" + a.getInputMinute());
+            }
+
             returnHour = a.getInputHour();
             returnMinute = a.getInputHour();
 

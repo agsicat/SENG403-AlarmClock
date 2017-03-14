@@ -180,12 +180,12 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         */
 
         if(temp == "Alarms List"){
-            AlarmsViewer av = new AlarmsViewer(a, alarms);
+            AlarmsViewer av = new AlarmsViewer(a);
             av.run();
         }
 
         else if(temp == "Set an Alarm" ){
-            AlarmGUI ag = new AlarmGUI(a, alarms);
+            AlarmGUI ag = new AlarmGUI(a);
             ag.run();
         }
     }

@@ -17,12 +17,10 @@ import javax.swing.DefaultListModel;
 public class AlarmsViewer extends JFrame implements Runnable, ActionListener{
 
 	AlarmClock a;
-    public static threadSpawner alarms;
     DefaultListModel<String> dlm;
 
-	public AlarmsViewer(AlarmClock param1, threadSpawner param2){
+	public AlarmsViewer(AlarmClock param1){
 	    this.a = param1;
-	    this.alarms = param2;
 	}
 
 	@Override
@@ -44,7 +42,14 @@ public class AlarmsViewer extends JFrame implements Runnable, ActionListener{
 		frame.getContentPane().add(scrollPane);
 
         dlm = new DefaultListModel<>();
-		dlm.addElement(String.valueOf(a.getInputHour()) + ":" + String.valueOf(a.getInputMinute()));
+        if(a.getInputMinute() < 10){
+            dlm.addElement(String.valueOf(a.getInputHour()) + ":0" + String.valueOf(a.getInputMinute()));
+        }
+
+        else{
+            dlm.addElement(String.valueOf(a.getInputHour()) + ":" + String.valueOf(a.getInputMinute()));
+        }
+
 		//Update an element
 		//dlm.set(1, "test3");
 
@@ -68,17 +73,24 @@ public class AlarmsViewer extends JFrame implements Runnable, ActionListener{
 		String temp = e.getActionCommand();
 
 		if (temp == "Edit"){
-            alarms.cancelAlarm(a.getAlarmID());
+            Gui.alarms.cancelAlarm(a.getAlarmID());
+			dlm.set(0, "");
 
-			AlarmGUI ag = new AlarmGUI(a, alarms);
+			AlarmGUI ag = new AlarmGUI(a);
 			ag.run();
 
-            dlm.addElement(String.valueOf(ag.getReturnHour()) + ":" + String.valueOf(ag.getReturnMinute()));
-
+			/*
+			if (ag.getReturnMinute() < 10){
+				dlm.addElement(String.valueOf(ag.getReturnHour()) + ":0" + String.valueOf(ag.getReturnMinute()));
+			}
+			else{
+				dlm.addElement(String.valueOf(ag.getReturnHour()) + ":" + String.valueOf(ag.getReturnMinute()));
+			}
+			*/
 
 		}
         else if (temp == "Cancel") {
-            alarms.cancelAlarm(a.getAlarmID());
+            Gui.alarms.cancelAlarm(a.getAlarmID());
             dlm.set(0, "");
         }
 	}
