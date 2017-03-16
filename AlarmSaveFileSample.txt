@@ -4,10 +4,18 @@ abc		//Alarm label (Format: String)(Allowable values: Any string with no special
 00		//Day of the week (Format: int) (Allowable values: 0 to 6, 0 for Sunday, 6 for Saturday)
 0		//Repeating daily (Format: int) (Allowable values: 0 for false, 1 for true)
 1		//Repeating weekly (Format: int) (Allowable values: 0 for false, 1 for true)
-
-
+EOA
+12		//Second alarm (format is same as the first alarm)
+33
+def
+01
+1
+0
+EOA
+EOF
 //Note:
 //The comments are for your convienence only. There will be no comments in the actual save file
 //Each variable is on a new line (thats how we will differentiate one variable from another)
 //Day of the week, repeating daily and weekly are for later user stories but it is still a good idea to save it 
-//End of file will be signified by two blank lines after all variables (new variables may/may not be added in the future)
+//End of each alarm will be signified by the line "EOA"
+//End of file will be signified by the line "EOF" (new variables may/may not be added in the future)
