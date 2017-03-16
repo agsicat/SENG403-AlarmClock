@@ -1,14 +1,13 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
-
 /**
  * Reads in a saved alarms file and reconstructs alarms
  * @author Jeffery
- * @version 0.9
+ * @version 0.9.1
  */
 public class AlarmsStartupReader {
 	
@@ -40,13 +39,16 @@ public class AlarmsStartupReader {
 	 * Calls a helper function to reconstruct alarms after reaching 
 	 * the end of the file
 	 * @throws IOException
+	 * @throws CloneNotSupportedException 
 	 */
-	public void readAndReconstructAlarms() throws IOException{
-		BufferedReader in = new BufferedReader(new FileReader("alarms.txt"));
+	public void readAndReconstructAlarms() throws IOException, CloneNotSupportedException{
+		File f = new File("alarms.txt");
+		if(!f.exists())
+			return;
+		BufferedReader in = new BufferedReader(new FileReader(f));
 		int dataMember = 0;
 		SavedVariables saved = new SavedVariables();
-		boolean eof = false;
-		while(!eof){
+		while(true){
 			String line = in.readLine();
 			if(line.equals("EOF")){
 				constructAlarms();
@@ -85,13 +87,9 @@ public class AlarmsStartupReader {
 			}
 			else if(dataMember == 6){
 				if(line.equals("EOA")){
-					try {
-						SavedVariables temp = saved.clone();
-						savedVars.add(temp);
-					} catch (CloneNotSupportedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					SavedVariables temp = saved.clone();
+					savedVars.add(temp);
+					saved = new SavedVariables();
 					numberOfAlarms++;
 					dataMember = 0;
 				}
