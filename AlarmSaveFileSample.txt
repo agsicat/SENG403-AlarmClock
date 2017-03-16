@@ -5,7 +5,9 @@ abc		//Alarm label (Format: String)(Allowable values: Any string with no special
 0		//Repeating daily (Format: int) (Allowable values: 0 for false, 1 for true)
 1		//Repeating weekly (Format: int) (Allowable values: 0 for false, 1 for true)
 
+
 //Note:
 //The comments are for your convienence only. There will be no comments in the actual save file
 //Each variable is on a new line (thats how we will differentiate one variable from another)
 //Day of the week, repeating daily and weekly are for later user stories but it is still a good idea to save it 
+//End of file will be signified by two blank lines after all variables (new variables may/may not be added in the future)
