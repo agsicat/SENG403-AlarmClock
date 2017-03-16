@@ -41,6 +41,9 @@ public class Gui extends JFrame implements ActionListener, Runnable{
 
     //storage for the alarms in the system
     public static threadSpawner alarms = new threadSpawner();
+    
+    //list of alarms in the system
+    public static AlarmsViewer alarmList = new AlarmsViewer();
 
     /**
      * Constructor
@@ -180,12 +183,11 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         */
 
         if(temp == "Alarms List"){
-            AlarmsViewer av = new AlarmsViewer(a);
-            av.run();
+            alarmList.run();
         }
 
         else if(temp == "Set an Alarm" ){
-            AlarmGUI ag = new AlarmGUI(a);
+            AlarmGUI ag = new AlarmGUI();
             ag.run();
         }
     }

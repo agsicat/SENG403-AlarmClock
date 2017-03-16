@@ -1,4 +1,5 @@
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,7 +11,8 @@ import java.util.Date;
  *
  *  Class creates a new object for the Alarm Menu
  *  @author Francisco Garcia
- *  @version 1.0
+ *  @Edit Aaron Kobelsky
+ *  @version 2.0
  */
 
 public class AlarmGUI extends JFrame implements Runnable, ActionListener {
@@ -22,13 +24,7 @@ public class AlarmGUI extends JFrame implements Runnable, ActionListener {
     public int returnHour = 0;
     public int returnMinute = 0;
 
-    AlarmClock a;
-
-    public long alarmID;
-
-
-    public AlarmGUI(AlarmClock param1){
-        this.a = param1;
+    public AlarmGUI(){
     }
 
     @Override
@@ -90,34 +86,18 @@ public class AlarmGUI extends JFrame implements Runnable, ActionListener {
 
         if(temp == "Save Alarm"){
             Date date = (Date)time.getModel().getValue();
+            AlarmClock a = new AlarmClock();
             a.setInputHour(date.getHours());
             a.setInputMinute(date.getMinutes());
+            a.setAlarmLabel("Alarm");
             a.setAlarmSet(true);
-            alarmID = Gui.alarms.spawnNewThread(a);
+            Gui.alarms.spawnNewThread(a);
             //System.out.println(a.getAlarmID());
             //System.out.println(a.getInputMinute());
-            if(a.getInputMinute() < 10){
-                JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":0" + a.getInputMinute());
-            }
-            else{
-                JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":" + a.getInputMinute());
-            }
-
+            JOptionPane.showMessageDialog(null, "Alarm set for: " + a.getInputHour() + ":" + a.getInputMinute());
             returnHour = a.getInputHour();
             returnMinute = a.getInputHour();
-
+            Gui.alarmList.addNewElement(a.getAlarmID());
         }
-/*
-            else if (temp == "Cancel") {
-                alarms.cancelAlarm(alarmID);
-                JOptionPane.showMessageDialog(null, "Alarm Cancelled");
-            }
-
-            else if (temp == "Alarms List") {
-                //JOptionPane.showMessageDialog(null, "List of Alarms");
-                AlarmsViewer av = new AlarmsViewer();
-                av._Run();
-            }
-*/
     }
 }

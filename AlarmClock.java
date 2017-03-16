@@ -11,7 +11,8 @@ import java.time.Month;
  * Provides functionality for whether it is time to ring or not.
  * 
  * @author Jenny Le
- * @edit Aaron Kobelsky
+ * @edit Aaron Kobelsky, Gave each alarm a unique ID number
+ * @edit Aaron Kobelsky, Implemented alarms being given labels
  * @version 3.1
  */
 public class AlarmClock{
@@ -45,6 +46,8 @@ public class AlarmClock{
 		
 		//Initialize the ID to be the unique HashCode of this object
 		alarmID = System.identityHashCode(this);
+		
+		alarmLabel = "Alarm";
 	}
 
 
@@ -139,6 +142,10 @@ public class AlarmClock{
 	
 	public void setAlarmLabel(String label){
 		this.alarmLabel = label;
+	}
+	
+	public String getAlarmLabel(){
+		return this.alarmLabel;
 	}
 
 }

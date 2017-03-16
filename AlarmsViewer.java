@@ -1,35 +1,41 @@
-
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.AbstractListModel;
+import java.util.ArrayList;
+
 import javax.swing.JScrollPane;
-import javax.swing.JScrollBar;
 import javax.swing.DefaultListModel;
 
+/**
+ * Displays a list of all currently set alarms in a list.
+ * Also allows a selected alarm from the list to be cancelled or edited
+ * @author Ibby
+ * @Edit Francisco Garcia, Implemented Edit and Cancel functionality for a single alarm
+ * @Edit Aaron Kobelsky, Refactored Edit and Cancel functionalities to support multiple alarms
+ * @version 2.0
+ */
+public class AlarmsViewer implements Runnable, ActionListener{
 
-public class AlarmsViewer extends JFrame implements Runnable, ActionListener{
+	//main JFrame of this GUI
+	public JFrame frame;
+	
+	//model in which list elements are stored
+    public DefaultListModel<listElement> dlm;
+    
+    //list of alarms displayed by this GUI
+    public JList<listElement> alarmsList;
 
-	AlarmClock a;
-    DefaultListModel<String> dlm;
-
-	public AlarmsViewer(AlarmClock param1){
-	    this.a = param1;
-	}
-
-	@Override
-	public void run() {
-		JFrame frame = new JFrame();
+    //constructs the alarmsViewer GUI, but does not yet display it
+	public AlarmsViewer(){
+		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
-		frame.setVisible(true);
 		frame.setResizable(false);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
 		JLabel lblAlarms = new JLabel("Alarms");
@@ -40,21 +46,10 @@ public class AlarmsViewer extends JFrame implements Runnable, ActionListener{
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(48, 51, 341, 115);
 		frame.getContentPane().add(scrollPane);
-
-        dlm = new DefaultListModel<>();
-        if(a.getInputMinute() < 10){
-            dlm.addElement(String.valueOf(a.getInputHour()) + ":0" + String.valueOf(a.getInputMinute()));
-        }
-
-        else{
-            dlm.addElement(String.valueOf(a.getInputHour()) + ":" + String.valueOf(a.getInputMinute()));
-        }
-
-		//Update an element
-		//dlm.set(1, "test3");
-
-		JList<String> list = new JList<>(dlm);
-		scrollPane.setViewportView(list);
+		
+		dlm = new DefaultListModel<>();
+		alarmsList = new JList<>(dlm);
+		scrollPane.setViewportView(alarmsList);
 
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.setBounds(279, 193, 89, 23);
@@ -67,32 +62,114 @@ public class AlarmsViewer extends JFrame implements Runnable, ActionListener{
 		frame.getContentPane().add(btnEdit);
 	}
 
+	@Override
+	public void run() {
+		frame.setVisible(true);
+	}
+	
+	public void addNewElement(Long ID){
+		dlm.addElement(new listElement(ID));
+	}
+
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String temp = e.getActionCommand();
-
+		int index = dlm.getSize();
+		ArrayList<listElement> elements = new ArrayList<listElement>();
+		for(int i = 0; i < index; i++){
+			elements.add(dlm.get(i));
+		}
+		
+		
 		if (temp == "Edit"){
-            Gui.alarms.cancelAlarm(a.getAlarmID());
-			dlm.set(0, "");
-
-			AlarmGUI ag = new AlarmGUI(a);
+			//if there are no currently set alarms, give the user a warning message
+			if(dlm.isEmpty()){
+				JOptionPane.showMessageDialog(null, "There are no alarms to edit");
+				return;
+			}
+			//if there is no currently selected alarm, give the user a warning message
+			if(alarmsList.getSelectedValue() == null){
+        		JOptionPane.showMessageDialog(null, "Please select an alarm to edit");
+        		return;
+        	}
+			
+			//TODO refactor this to use Jeff's change time function
+			//cancel the alarm
+            Gui.alarms.cancelAlarm(alarmsList.getSelectedValue().getAlarmID());
+            dlm.remove(alarmsList.getSelectedIndex());
+            
+            //create a new alarm to replace it
+			AlarmGUI ag = new AlarmGUI();
 			ag.run();
-
-			/*
-			if (ag.getReturnMinute() < 10){
-				dlm.addElement(String.valueOf(ag.getReturnHour()) + ":0" + String.valueOf(ag.getReturnMinute()));
-			}
-			else{
-				dlm.addElement(String.valueOf(ag.getReturnHour()) + ":" + String.valueOf(ag.getReturnMinute()));
-			}
-			*/
 
 		}
         else if (temp == "Cancel") {
-            Gui.alarms.cancelAlarm(a.getAlarmID());
-            dlm.set(0, "");
+        	//if there are no currently set alarms, give the user a warning message
+        	if(dlm.isEmpty()){
+        		JOptionPane.showMessageDialog(null, "There are no alarms to cancel");
+				return;
+			}
+        	//if there is no currently selected alarm, give the user a warning message
+        	if(alarmsList.getSelectedValue() == null){
+        		JOptionPane.showMessageDialog(null, "Please select an alarm to cancel");
+        		return;
+        	}
+            Gui.alarms.cancelAlarm(alarmsList.getSelectedValue().getAlarmID());
+            dlm.remove(alarmsList.getSelectedIndex());
         }
+	}
+	
+	/**
+	 * Class used for displaying alarms in the alarm list
+	 * @author Aaron Kobelsky
+	 */
+	public class listElement{
+		
+		//ID for the alarm this list element represents
+		private Long alarmID;
+		
+		//minute, hour and label of the alarm
+		private int alarmMinute;
+		private int alarmHour;
+		private String alarmLabel;
+		
+		//day the alarm is set for, in the case of daily repeating will be "EveryDay"
+		//private String alarmDay;
+		
+		//flags for whether the alarm will repeat
+		//private boolean repeatDaily;
+		//private boolean repeatWeekly;
+		
+		public listElement(Long ID){
+			AlarmClock temp = Gui.alarms.getThreadByID(ID).alarm;
+			alarmMinute = temp.getInputMinute();
+			alarmHour = temp.getInputHour();
+			alarmLabel = temp.getAlarmLabel();
+			//TODO add day support to AlarmClock
+			//alarmDay = temp.getDay();
+			//TODO add repeat functionality to AlarmClock
+			//repeatDaily = temp.getDaily();
+			//repeatWeekly = temp.getWeekly();
+			alarmID = ID;
+		}
+		
+		public String toString(){
+			//TODO add display for repeating functionality and day
+			String tempHour = Integer.toBinaryString(alarmHour);
+			String tempMinute = Integer.toBinaryString(alarmMinute);
+			if(alarmHour < 10){
+	            tempHour = "0"+tempHour;
+	        }
+			if(alarmMinute < 10){
+				tempMinute = "0"+tempMinute;
+			}
+			return alarmLabel+" "+tempHour+":"+tempMinute;
+		}
+		
+		public Long getAlarmID(){
+			return alarmID;
+		}
 	}
 
 
