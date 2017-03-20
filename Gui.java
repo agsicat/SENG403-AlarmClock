@@ -123,7 +123,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         if (SystemTray.isSupported()) {
             tray=SystemTray.getSystemTray();
 
-            Image image=Toolkit.getDefaultToolkit().getImage("C:/Users/matte/Documents/GitHub/SENG403-AlarmClock/AlarmClockIcon.png");
+            Image image = Toolkit.getDefaultToolkit().getImage("AlarmClockIcon.png");
             ActionListener exitListener = new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     System.exit(0);
