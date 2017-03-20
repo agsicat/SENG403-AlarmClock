@@ -11,8 +11,22 @@
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
+import java.awt.event.*;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JButton;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.AbstractListModel;
+import javax.swing.JScrollPane;
+import javax.swing.JScrollBar;
+import javax.swing.DefaultListModel;
+import javax.swing.UIManager;
 
 
 public class Gui extends JFrame implements ActionListener, Runnable{
@@ -20,12 +34,20 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     //Variables for GUI Component
     private JFrame frame;
     private JPanel panel;
-    private JButton btnSwitch, btnAlarm;
+    private JButton btnSwitch, btnList, btnAlarm;
     private JLabel label;
     private boolean doAnalogDisplay = false;
+    AlarmClock a = new AlarmClock();
+
+    // FOR MINIMIZING TO THE SYSTEM TRAY - MATTEO
+    TrayIcon trayIcon;
+    SystemTray tray;
 
     //storage for the alarms in the system
     public static threadSpawner alarms = new threadSpawner();
+
+    //list of alarms in the system
+    public static AlarmsViewer alarmList = new AlarmsViewer();
 
     /**
      * Constructor
@@ -33,6 +55,9 @@ public class Gui extends JFrame implements ActionListener, Runnable{
      * It creates an instance of the Graphic User Interface
      */
     public Gui(){
+
+        // NEEDED FOR SYSTEM TRAY FUNCTIONALITY - MATTEO
+        super("SystemTray test");
 
         //Initialize JFrame of the GUI
         frame = new JFrame("Alarm Clock");
@@ -45,14 +70,22 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         panel = new JPanel();
         panel.setLayout(null);
 
+        /*
         //Initialize the first JButton of the GUI
         btnSwitch = new JButton("Switch");
         btnSwitch.addActionListener(this);
         btnSwitch.setBounds(175, 375, 120, 35);
         panel.add(btnSwitch);
+        */
+
+        //Initialize the first JButton of the GUI
+        btnList = new JButton("Alarms List");
+        btnList.addActionListener(this);
+        btnList.setBounds(175, 375, 120, 35);
+        panel.add(btnList);
 
         //Initialize the second JButton of the GUI
-        btnAlarm = new JButton("Alarm");
+        btnAlarm = new JButton("Set an Alarm");
         btnAlarm.addActionListener(this);
         btnAlarm.setBounds(425, 375, 120, 35);
         panel.add(btnAlarm);
@@ -68,6 +101,86 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         //Add panel to frame
         frame.add(panel);
 
+
+        /*
+            System tray code authored by Mohammad Faisal
+                -ermohammadfaisal.blogspot.com
+                -facebook.com/m.faisal6621
+
+            http://stackoverflow.com/questions/7461477/how-to-hide-a-jframe-in-system-tray-of-taskbar
+
+            * Taken code edited by Matteo Molnar
+        */
+
+        // START OF MINIMIZE TO TRAY CODE - MATTEO
+        // ---------------------------------------
+        System.out.println("creating instance");
+
+        try {
+            System.out.println("setting look and feel");
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            System.out.println("Unable to set LookAndFeel");
+        }
+
+        if (SystemTray.isSupported()) {
+            System.out.println("system tray supported");
+            tray=SystemTray.getSystemTray();
+
+            Image image=Toolkit.getDefaultToolkit().getImage("C:/Users/matte/Documents/GitHub/SENG403-AlarmClock/AlarmClockIcon.png");
+            ActionListener exitListener = new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("Exiting....");
+                    System.exit(0);
+                }
+            };
+
+            PopupMenu popup = new PopupMenu();
+            MenuItem defaultItem=new MenuItem("Exit");
+            defaultItem.addActionListener(exitListener);
+            popup.add(defaultItem);
+
+            defaultItem=new MenuItem("Open");
+            defaultItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    frame.setVisible(true);
+                    frame.setExtendedState(JFrame.NORMAL);
+                }
+            });
+
+            popup.add(defaultItem);
+            trayIcon=new TrayIcon(image, "Alarm Clock", popup);
+            trayIcon.setImageAutoSize(true);
+        }
+
+        else {
+            System.out.println("system tray not supported");
+        }
+
+        frame.addWindowStateListener(new WindowStateListener() {
+            public void windowStateChanged(WindowEvent e) {
+                if (e.getNewState() == ICONIFIED || e.getNewState() == 7) {
+                    try {
+                        tray.add(trayIcon);
+                        frame.setVisible(false);
+                        System.out.println("added to SystemTray");
+                    } catch (AWTException ex) {
+                        System.out.println("unable to add to tray");
+                    }
+                }
+
+                if (e.getNewState() == MAXIMIZED_BOTH || e.getNewState() == NORMAL) {
+                    tray.remove(trayIcon);
+                    frame.setVisible(true);
+                    System.out.println("Tray icon removed");
+                }
+            }
+        });
+
+        //http://www.iconsdb.com/icons/preview/white/alarm-clock-2-xxl.png
+        setIconImage(Toolkit.getDefaultToolkit().getImage("AlarmClockIcon.png"));
+        // ----------------------------------
+        // END MINIMIZE TO TRAY CODE - MATTEO
 
     }
 
@@ -97,14 +210,14 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         String temp;
         String tempminute = "";
         String tempsecond = "";
-        
+
         if(10 > (int)time.get(Calendar.MINUTE)){
         	tempminute = "0"+time.get(Calendar.MINUTE);
         }
         else{
         	tempminute += time.get(Calendar.MINUTE);
         }
-        
+
         if(10 > (int)time.get(Calendar.SECOND)){
         	tempsecond = "0"+time.get(Calendar.SECOND);
         }
@@ -122,6 +235,26 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         return temp;
     }
 
+
+    @Override
+    public void run() {
+
+        //infinite while loop updates the GUI every second so that it always displays the correct time
+        while(true){
+            //if the time should be displayed in an analog format
+            if(this.doAnalogDisplay){
+                this.label.setText("Analog Display");
+            }
+            //else the time should be displayed in a digital format
+            else{
+                String date = this.getTime();
+                this.label.setText(date);
+            }
+            //refresh the GUI to reflect the changed contents
+            this.repaint();
+        }
+    }
+
     @Override
     /**
      * Function allows the GUI to respond to an action performed
@@ -131,93 +264,21 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     public void actionPerformed(ActionEvent e) {
         String temp = e.getActionCommand();
 
-        //this button changes whether the time should be displayed in an analog or digital format
+        /*
         if(temp == "Switch"){
             this.doAnalogDisplay = !this.doAnalogDisplay;
         }
+        */
 
-        else if(temp == "Alarm" ){
+        if(temp == "Alarms List"){
+            alarmList.run();
+        }
+
+        else if(temp == "Set an Alarm" ){
             AlarmGUI ag = new AlarmGUI();
             ag.run();
         }
     }
-
-
-    /**
-     *  Class creates a new object for the Alarm Menu
-     */
-    public class AlarmGUI extends JFrame implements Runnable, ActionListener{
-
-    	public Date alarmtime = new Date();
-    	public boolean end = false;
-    	public JSpinner time;
-
-        public AlarmGUI(){
-
-        }
-
-        @Override
-        public void run() {
-            JFrame frame = new JFrame("Alarm Menu");
-            frame.setSize(650, 100);
-            frame.setVisible(true);
-            frame.setResizable(false);
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-            //Spinner for days of the week
-            //How do you adjust the size of the text box? I did it a chicky way... Insert some spaces after Monday
-            String[] list = {"Monday       ","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"};
-            SpinnerModel model1 = new SpinnerListModel(list);
-            JSpinner day = new JSpinner(model1);
-
-            //Spinner for the time
-            SpinnerModel model2 = new SpinnerDateModel(alarmtime, null, null, Calendar.HOUR_OF_DAY);
-            time = new JSpinner(model2);
-
-            JSpinner.DateEditor de = new JSpinner.DateEditor(time, "HH:mm");
-            time.setEditor(de);
-
-            //Action Listener within Action Listener? How do you do that?
-            JButton btn = new JButton("Save Alarm");
-            JButton cancelBtn = new JButton("Cancel");
-            btn.addActionListener(this);
-            cancelBtn.addActionListener(this);
-
-            Container cont = frame.getContentPane();
-            cont.setLayout(new FlowLayout());
-
-            cont.add(new JLabel("Select Day:"));
-            cont.add(day);
-
-            cont.add(new JLabel("Select Time:"));
-            cont.add(time);
-
-            cont.add(btn);
-            cont.add(cancelBtn);
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            String temp = e.getActionCommand();
-            if(temp == "Save Alarm"){
-            	Date date = (Date)time.getModel().getValue();
-            	AlarmClock a = new AlarmClock();
-            	a.setInputHour(date.getHours());
-            	a.setInputMinute(date.getMinutes());
-            	a.setAlarmSet(true);
-            	alarms.spawnNewThread(a);
-                JOptionPane.showMessageDialog(null, "Alarm set for: "+date.getHours() +":"+ date.getMinutes());
-            }
-
-            else if (temp == "Cancel") {
-                //alarms.cancelAlarm(alarmID);
-                JOptionPane.showMessageDialog(null, "Alarm Cancelled");
-            }
-        }
-
-    }
-
-
-
 
     /**
      * Main function of the class
@@ -228,23 +289,4 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         Gui g = new Gui();
         g.run();
     }
-
-    @Override
-	public void run() {
-
-    	 //infinite while loop updates the GUI every second so that it always displays the correct time
-		 while(true){
-			 //if the time should be displayed in an analog format
-			 if(this.doAnalogDisplay){
-				 this.label.setText("Analog Display");
-			 }
-			 //else the time should be displayed in a digital format
-			 else{
-				 String date = this.getTime();
-		         	this.label.setText(date);
-			 }
-			 //refresh the GUI to reflect the changed contents
-         	 this.repaint();
-         }
-	}
 }

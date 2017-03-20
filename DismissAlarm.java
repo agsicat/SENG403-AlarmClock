@@ -13,7 +13,7 @@ import java.awt.Color;
 public class DismissAlarm {
 
 	private JFrame frame;
-	
+
 	private long alarmID;
 
 	/**
@@ -54,7 +54,7 @@ public class DismissAlarm {
 		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		frame.getContentPane().setLayout(gridBagLayout);
-		
+
 		JLabel lblAlarm = new JLabel("ALARM");
 		lblAlarm.setForeground(Color.RED);
 		lblAlarm.setFont(new Font("Tahoma", Font.BOLD, 70));
@@ -64,14 +64,14 @@ public class DismissAlarm {
 		gbc_lblAlarm.gridx = 1;
 		gbc_lblAlarm.gridy = 1;
 		frame.getContentPane().add(lblAlarm, gbc_lblAlarm);
-		
+
 		JLabel lblAlarmTime = new JLabel("ALARM TIME");
 		GridBagConstraints gbc_lblAlarmTime = new GridBagConstraints();
 		gbc_lblAlarmTime.insets = new Insets(0, 0, 5, 5);
 		gbc_lblAlarmTime.gridx = 1;
 		gbc_lblAlarmTime.gridy = 2;
 		frame.getContentPane().add(lblAlarmTime, gbc_lblAlarmTime);
-		
+
 		JButton btnDismiss = new JButton("Dismiss");
 		btnDismiss.addActionListener(new RandomActionListener());
 		GridBagConstraints gbc_btnDismiss = new GridBagConstraints();
@@ -79,16 +79,17 @@ public class DismissAlarm {
 		gbc_btnDismiss.gridx = 1;
 		gbc_btnDismiss.gridy = 3;
 		frame.getContentPane().add(btnDismiss, gbc_btnDismiss);
-		
+		frame.setAlwaysOnTop(true);
+
 		alarmID = ID;
 	}
-	
+
 	public class RandomActionListener implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
-			
+
 			//Passes the alarmID of current alarm to stop the thread
 			Gui.alarms.dismissAlarm(alarmID);
-			
+
 			//Closes window when Dismiss is selected
 			frame.dispose();
 		}
