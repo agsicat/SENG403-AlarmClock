@@ -149,7 +149,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             });
 
             popup.add(defaultItem);
-            trayIcon=new TrayIcon(image, "SystemTray Demo", popup);
+            trayIcon=new TrayIcon(image, "Alarm Clock", popup);
             trayIcon.setImageAutoSize(true);
         }
 
