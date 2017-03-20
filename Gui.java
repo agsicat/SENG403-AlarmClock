@@ -28,6 +28,10 @@ import javax.swing.JScrollBar;
 import javax.swing.DefaultListModel;
 import javax.swing.UIManager;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Array;
 
 public class Gui extends JFrame implements ActionListener, Runnable{
 
@@ -38,6 +42,9 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     private JLabel label;
     private boolean doAnalogDisplay = false;
     AlarmClock a = new AlarmClock();
+    
+    private static final String FILENAME = "alarms.txt";
+
 
     // FOR MINIMIZING TO THE SYSTEM TRAY - MATTEO
     TrayIcon trayIcon;
@@ -65,6 +72,67 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         frame.setSize(700, 500);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+      //Source:
+        //http://stackoverflow.com/questions/12601004/do-something-before-window-closes-after-user-presses-x
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                BufferedWriter bw = null;
+                FileWriter fw = null;
+
+                int hour;
+                int minute;
+                String label;
+                int day;
+                int dailyRepeat;
+                int weeklyRepeat;
+
+                try {
+                    ArrayList<Long> allThreads = alarms.getAllThreadID();
+
+                    fw = new FileWriter(FILENAME);
+                    bw = new BufferedWriter(fw);
+                    for(int i = 0; i < allThreads.size(); i++){
+                    	AlarmClock temp = alarms.getThreadByID(allThreads.get(i)).alarm;
+                    	hour = temp.getInputHour();
+                        minute = temp.getInputMinute();
+                        label = "testLabel";
+                        day = 0;
+                        dailyRepeat = 0;
+                        weeklyRepeat = 0;
+                    	bw.write(hour + "\n" + minute + "\n" + label + 
+                    			"\n" + day + "\n" + dailyRepeat + "\n" + 
+                    			weeklyRepeat + "\n" + "EOA" + "\n");
+                    }
+                    bw.write("EOF");
+                    System.out.println("Done");
+
+                } catch (IOException g) {
+
+                    g.printStackTrace();
+
+                } finally {
+
+                    try {
+
+                        if (bw != null)
+                            bw.close();
+
+                        if (fw != null)
+                            fw.close();
+
+                    } catch (IOException ex) {
+
+                        ex.printStackTrace();
+
+                    }
+
+                }
+
+                super.windowClosing(e);
+            }
+        });
 
         //Initialize JPanel of the GUI
         panel = new JPanel();
@@ -117,13 +185,14 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            System.out.println("Unable to set LookAndFeel");
+        	System.out.println("Unable to set LookAndFeel");
         }
 
         if (SystemTray.isSupported()) {
+            System.out.println("system tray supported");
             tray=SystemTray.getSystemTray();
 
-            Image image = Toolkit.getDefaultToolkit().getImage("AlarmClockIcon.png");
+            Image image=Toolkit.getDefaultToolkit().getImage("C:/Users/matte/Documents/GitHub/SENG403-AlarmClock/AlarmClockIcon.png");
             ActionListener exitListener = new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     System.exit(0);
@@ -232,6 +301,16 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     @Override
     public void run() {
 
+    	AlarmsStartupReader asr = new AlarmsStartupReader();
+    	try {
+			asr.readAndReconstructAlarms();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         //infinite while loop updates the GUI every second so that it always displays the correct time
         while(true){
             //if the time should be displayed in an analog format
