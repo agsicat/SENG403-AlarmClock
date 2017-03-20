@@ -78,58 +78,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                BufferedWriter bw = null;
-                FileWriter fw = null;
-
-                int hour;
-                int minute;
-                String label;
-                int day;
-                int dailyRepeat;
-                int weeklyRepeat;
-
-                try {
-                    ArrayList<Long> allThreads = alarms.getAllThreadID();
-
-                    fw = new FileWriter(FILENAME);
-                    bw = new BufferedWriter(fw);
-                    for(int i = 0; i < allThreads.size(); i++){
-                    	AlarmClock temp = alarms.getThreadByID(allThreads.get(i)).alarm;
-                    	hour = temp.getInputHour();
-                        minute = temp.getInputMinute();
-                        label = "testLabel";
-                        day = 0;
-                        dailyRepeat = 0;
-                        weeklyRepeat = 0;
-                    	bw.write(hour + "\n" + minute + "\n" + label + 
-                    			"\n" + day + "\n" + dailyRepeat + "\n" + 
-                    			weeklyRepeat + "\n" + "EOA" + "\n");
-                    }
-                    bw.write("EOF");
-                    System.out.println("Done");
-
-                } catch (IOException g) {
-
-                    g.printStackTrace();
-
-                } finally {
-
-                    try {
-
-                        if (bw != null)
-                            bw.close();
-
-                        if (fw != null)
-                            fw.close();
-
-                    } catch (IOException ex) {
-
-                        ex.printStackTrace();
-
-                    }
-
-                }
-
+                writeAlarms();
                 super.windowClosing(e);
             }
         });
@@ -192,9 +141,10 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             System.out.println("system tray supported");
             tray=SystemTray.getSystemTray();
 
-            Image image=Toolkit.getDefaultToolkit().getImage("C:/Users/matte/Documents/GitHub/SENG403-AlarmClock/AlarmClockIcon.png");
+            Image image=Toolkit.getDefaultToolkit().getImage("AlarmClockIcon.png");
             ActionListener exitListener = new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                	writeAlarms();
                     System.exit(0);
                 }
             };
@@ -352,6 +302,59 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         }
     }
 
+    private void writeAlarms(){
+    	BufferedWriter bw = null;
+        FileWriter fw = null;
+
+        int hour;
+        int minute;
+        String label;
+        int day;
+        int dailyRepeat;
+        int weeklyRepeat;
+
+        try {
+            ArrayList<Long> allThreads = alarms.getAllThreadID();
+
+            fw = new FileWriter(FILENAME);
+            bw = new BufferedWriter(fw);
+            for(int i = 0; i < allThreads.size(); i++){
+            	AlarmClock temp = alarms.getThreadByID(allThreads.get(i)).alarm;
+            	hour = temp.getInputHour();
+                minute = temp.getInputMinute();
+                label = "testLabel";
+                day = 0;
+                dailyRepeat = 0;
+                weeklyRepeat = 0;
+            	bw.write(hour + "\n" + minute + "\n" + label + 
+            			"\n" + day + "\n" + dailyRepeat + "\n" + 
+            			weeklyRepeat + "\n" + "EOA" + "\n");
+            }
+            bw.write("EOF");
+            System.out.println("Done");
+
+        } catch (IOException g) {
+
+            g.printStackTrace();
+
+        } finally {
+
+            try {
+
+                if (bw != null)
+                    bw.close();
+
+                if (fw != null)
+                    fw.close();
+
+            } catch (IOException ex) {
+
+                ex.printStackTrace();
+
+            }
+
+        }
+    }
     /**
      * Main function of the class
      *
