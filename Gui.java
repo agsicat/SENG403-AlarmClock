@@ -114,23 +114,18 @@ public class Gui extends JFrame implements ActionListener, Runnable{
 
         // START OF MINIMIZE TO TRAY CODE - MATTEO
         // ---------------------------------------
-        System.out.println("creating instance");
-
         try {
-            System.out.println("setting look and feel");
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
             System.out.println("Unable to set LookAndFeel");
         }
 
         if (SystemTray.isSupported()) {
-            System.out.println("system tray supported");
             tray=SystemTray.getSystemTray();
 
-            Image image=Toolkit.getDefaultToolkit().getImage("C:/Users/matte/Documents/GitHub/SENG403-AlarmClock/AlarmClockIcon.png");
+            Image image = Toolkit.getDefaultToolkit().getImage("AlarmClockIcon.png");
             ActionListener exitListener = new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("Exiting....");
                     System.exit(0);
                 }
             };
@@ -163,7 +158,6 @@ public class Gui extends JFrame implements ActionListener, Runnable{
                     try {
                         tray.add(trayIcon);
                         frame.setVisible(false);
-                        System.out.println("added to SystemTray");
                     } catch (AWTException ex) {
                         System.out.println("unable to add to tray");
                     }
@@ -172,7 +166,6 @@ public class Gui extends JFrame implements ActionListener, Runnable{
                 if (e.getNewState() == MAXIMIZED_BOTH || e.getNewState() == NORMAL) {
                     tray.remove(trayIcon);
                     frame.setVisible(true);
-                    System.out.println("Tray icon removed");
                 }
             }
         });
