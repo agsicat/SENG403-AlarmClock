@@ -57,32 +57,32 @@ public class AlarmsStartupReader {
 			}
 			if(dataMember == 0){
 				saved.hour = Integer.parseInt(line);
-				System.out.println(saved.hour);
+				//System.out.println(saved.hour);
 				dataMember++;
 			}
 			else if(dataMember == 1){
 				saved.minute = Integer.parseInt(line);
-				System.out.println(saved.minute);
+				//System.out.println(saved.minute);
 				dataMember++;
 			}
 			else if(dataMember == 2){
 				saved.label = line;
-				System.out.println(saved.label);
+				//System.out.println(saved.label);
 				dataMember++;
 			}
 			else if(dataMember == 3){
 				saved.dayOfWeek = Integer.parseInt(line);
-				System.out.println(saved.dayOfWeek);
+				//System.out.println(saved.dayOfWeek);
 				dataMember++;
 			}
 			else if(dataMember == 4){
 				saved.repeatDaily = Integer.parseInt(line);
-				System.out.println(saved.repeatDaily);
+				//System.out.println(saved.repeatDaily);
 				dataMember++;
 			}
 			else if(dataMember == 5){
 				saved.repeatWeekly = Integer.parseInt(line);
-				System.out.println(saved.repeatWeekly);
+				//System.out.println(saved.repeatWeekly);
 				dataMember++;
 			}
 			else if(dataMember == 6){
