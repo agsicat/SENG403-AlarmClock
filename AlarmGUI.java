@@ -1,5 +1,4 @@
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,8 +10,7 @@ import java.util.Date;
  *
  *  Class creates a new object for the Alarm Menu
  *  @author Francisco Garcia
- *  @Edit Aaron Kobelsky
- *  @version 2.0
+ *  @version 1.5
  */
 
 public class AlarmGUI extends JFrame implements Runnable, ActionListener {
@@ -20,11 +18,18 @@ public class AlarmGUI extends JFrame implements Runnable, ActionListener {
     public Date alarmtime = new Date();
     public boolean end = false;
     public JSpinner time;
+    public JTextField textField;
 
     public int returnHour = 0;
     public int returnMinute = 0;
 
-    public AlarmGUI(){
+    AlarmClock a;
+
+    public long alarmID;
+
+
+    public AlarmGUI(AlarmClock param1){
+        this.a = param1;
     }
 
     @Override
@@ -50,14 +55,15 @@ public class AlarmGUI extends JFrame implements Runnable, ActionListener {
 
         //Action Listener within Action Listener? How do you do that?
         JButton btn = new JButton("Save Alarm");
-        //JButton cancelBtn = new JButton("Cancel");
-        //JButton listBtn = new JButton("Alarms List");
         btn.addActionListener(this);
-        //cancelBtn.addActionListener(this);
-        //listBtn.addActionListener(this);
 
         Container cont = frame.getContentPane();
         cont.setLayout(new FlowLayout());
+
+        textField = new JTextField(10);
+
+        cont.add(new JLabel("Set Label:"));
+        cont.add(textField);
 
         cont.add(new JLabel("Select Day:"));
         cont.add(day);
@@ -66,8 +72,6 @@ public class AlarmGUI extends JFrame implements Runnable, ActionListener {
         cont.add(time);
 
         cont.add(btn);
-        //cont.add(cancelBtn);
-        //cont.add(listBtn);
 
     }
 
@@ -85,19 +89,40 @@ public class AlarmGUI extends JFrame implements Runnable, ActionListener {
         String temp = e.getActionCommand();
 
         if(temp == "Save Alarm"){
+
             Date date = (Date)time.getModel().getValue();
-            AlarmClock a = new AlarmClock();
             a.setInputHour(date.getHours());
             a.setInputMinute(date.getMinutes());
-            a.setAlarmLabel("Alarm");
             a.setAlarmSet(true);
-            Gui.alarms.spawnNewThread(a);
-            //System.out.println(a.getAlarmID());
-            //System.out.println(a.getInputMinute());
-            JOptionPane.showMessageDialog(null, "Alarm set for: " + a.getInputHour() + ":" + a.getInputMinute());
+            alarmID = Gui.alarms.spawnNewThread(a);
+
+            //System.out.println(textField.getText());
+
+            a.setAlarmLabel(textField.getText());
+
+
+            if(a.getInputMinute() < 10){
+                JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":0" + a.getInputMinute());
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":" + a.getInputMinute());
+            }
+
             returnHour = a.getInputHour();
             returnMinute = a.getInputHour();
-            Gui.alarmList.addNewElement(a.getAlarmID());
+
         }
+/*
+            else if (temp == "Cancel") {
+                alarms.cancelAlarm(alarmID);
+                JOptionPane.showMessageDialog(null, "Alarm Cancelled");
+            }
+
+            else if (temp == "Alarms List") {
+                //JOptionPane.showMessageDialog(null, "List of Alarms");
+                AlarmsViewer av = new AlarmsViewer();
+                av._Run();
+            }
+*/
     }
 }
