@@ -184,12 +184,15 @@ public class AlarmsViewer implements Runnable, ActionListener{
 		//JSpinner to indicate the time to change the selected alarm to
         public JSpinner time;
         
+        //JFrame of this Gui
+        public JFrame frame;
+        
         //JTextField to allow the user to input a label for the alarm
     	public JTextField textField;
 
         @Override
         public void run() {
-            JFrame frame = new JFrame("Alarm Menu");
+            frame = new JFrame("Alarm Menu");
             frame.setSize(650, 100);
             frame.setVisible(true);
             frame.setResizable(false);
@@ -270,6 +273,8 @@ public class AlarmsViewer implements Runnable, ActionListener{
 					JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":" + a.getInputMinute());
 				}
          
+				//close the gui
+				frame.dispose();
             }
         }
     }
