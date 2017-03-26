@@ -19,7 +19,7 @@ public class AlarmGUI implements Runnable, ActionListener {
     //JSpinner for selecting a time for the new alarm to ring
     public JSpinner time;
 	
-	//jTextField to allow the user to input a label for the alarm
+	//JTextField to allow the user to input a label for the alarm
 	public JTextField textField;
 
     @Override
