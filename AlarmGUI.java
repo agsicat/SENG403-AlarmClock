@@ -1,4 +1,5 @@
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,27 +11,13 @@ import java.util.Date;
  *
  *  Class creates a new object for the Alarm Menu
  *  @author Francisco Garcia
- *  @version 1.5
+ *  @Edit Aaron Kobelsky, Multiple refactoring tasks to allow handling of multiple alarms
+ *  @version 3.0
  */
+public class AlarmGUI implements Runnable, ActionListener {
 
-public class AlarmGUI extends JFrame implements Runnable, ActionListener {
-
-    public Date alarmtime = new Date();
-    public boolean end = false;
+    //JSpinner for selecting a time for the new alarm to ring
     public JSpinner time;
-    public JTextField textField;
-
-    public int returnHour = 0;
-    public int returnMinute = 0;
-
-    AlarmClock a;
-
-    public long alarmID;
-
-
-    public AlarmGUI(AlarmClock param1){
-        this.a = param1;
-    }
 
     @Override
     public void run() {
@@ -47,23 +34,17 @@ public class AlarmGUI extends JFrame implements Runnable, ActionListener {
         JSpinner day = new JSpinner(model1);
 
         //Spinner for the time
-        SpinnerModel model2 = new SpinnerDateModel(alarmtime, null, null, Calendar.HOUR_OF_DAY);
+        SpinnerModel model2 = new SpinnerDateModel(new Date(), null, null, Calendar.HOUR_OF_DAY);
         time = new JSpinner(model2);
 
         JSpinner.DateEditor de = new JSpinner.DateEditor(time, "HH:mm");
         time.setEditor(de);
 
-        //Action Listener within Action Listener? How do you do that?
         JButton btn = new JButton("Save Alarm");
         btn.addActionListener(this);
 
         Container cont = frame.getContentPane();
         cont.setLayout(new FlowLayout());
-
-        textField = new JTextField(10);
-
-        cont.add(new JLabel("Set Label:"));
-        cont.add(textField);
 
         cont.add(new JLabel("Select Day:"));
         cont.add(day);
@@ -72,57 +53,33 @@ public class AlarmGUI extends JFrame implements Runnable, ActionListener {
         cont.add(time);
 
         cont.add(btn);
-
     }
 
-    //Used in AlarmsViewer to update time
-    public int getReturnHour(){
-        return this.returnHour;
-    }
-
-    //Used in AlarmsViewer to update time
-    public int getReturnMinute(){
-        return this.returnMinute;
-    }
-
-    public void actionPerformed(ActionEvent e) {
+    @SuppressWarnings("deprecation")
+	public void actionPerformed(ActionEvent e) {
         String temp = e.getActionCommand();
 
         if(temp == "Save Alarm"){
-
+        	//get the time selected in the spinner
             Date date = (Date)time.getModel().getValue();
+            
+            //create a new alarmClock object
+            AlarmClock a = new AlarmClock(date);
+            
+            //set the alarm
             a.setInputHour(date.getHours());
             a.setInputMinute(date.getMinutes());
+            a.setAlarmLabel("Alarm");
             a.setAlarmSet(true);
-            alarmID = Gui.alarms.spawnNewThread(a);
-
-            //System.out.println(textField.getText());
-
-            a.setAlarmLabel(textField.getText());
-
-
-            if(a.getInputMinute() < 10){
-                JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":0" + a.getInputMinute());
-            }
-            else{
-                JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":" + a.getInputMinute());
-            }
-
-            returnHour = a.getInputHour();
-            returnMinute = a.getInputHour();
-
+            
+            //start the alarm thread
+            Gui.alarms.spawnNewThread(a);
+            
+            //add the new alarm to the list
+            Gui.alarmList.addNewElement(a.getAlarmID());
+            
+            //notify the user an alarm has been set
+            JOptionPane.showMessageDialog(null, "Alarm set for: " + a.getInputHour() + ":" + a.getInputMinute());
         }
-/*
-            else if (temp == "Cancel") {
-                alarms.cancelAlarm(alarmID);
-                JOptionPane.showMessageDialog(null, "Alarm Cancelled");
-            }
-
-            else if (temp == "Alarms List") {
-                //JOptionPane.showMessageDialog(null, "List of Alarms");
-                AlarmsViewer av = new AlarmsViewer();
-                av._Run();
-            }
-*/
     }
 }
