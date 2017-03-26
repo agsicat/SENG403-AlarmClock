@@ -11,21 +11,16 @@ import java.util.Date;
  *
  *  Class creates a new object for the Alarm Menu
  *  @author Francisco Garcia
- *  @Edit Aaron Kobelsky
- *  @version 2.0
+ *  @Edit Aaron Kobelsky, Multiple refactoring tasks to allow handling of multiple alarms
+ *  @version 3.0
  */
+public class AlarmGUI implements Runnable, ActionListener {
 
-public class AlarmGUI extends JFrame implements Runnable, ActionListener {
-
-    public Date alarmtime = new Date();
-    public boolean end = false;
+    //JSpinner for selecting a time for the new alarm to ring
     public JSpinner time;
-
-    public int returnHour = 0;
-    public int returnMinute = 0;
-
-    public AlarmGUI(){
-    }
+	
+	//JTextField to allow the user to input a label for the alarm
+	public JTextField textField;
 
     @Override
     public void run() {
@@ -42,19 +37,14 @@ public class AlarmGUI extends JFrame implements Runnable, ActionListener {
         JSpinner day = new JSpinner(model1);
 
         //Spinner for the time
-        SpinnerModel model2 = new SpinnerDateModel(alarmtime, null, null, Calendar.HOUR_OF_DAY);
+        SpinnerModel model2 = new SpinnerDateModel(new Date(), null, null, Calendar.HOUR_OF_DAY);
         time = new JSpinner(model2);
 
         JSpinner.DateEditor de = new JSpinner.DateEditor(time, "HH:mm");
         time.setEditor(de);
 
-        //Action Listener within Action Listener? How do you do that?
         JButton btn = new JButton("Save Alarm");
-        //JButton cancelBtn = new JButton("Cancel");
-        //JButton listBtn = new JButton("Alarms List");
         btn.addActionListener(this);
-        //cancelBtn.addActionListener(this);
-        //listBtn.addActionListener(this);
 
         Container cont = frame.getContentPane();
         cont.setLayout(new FlowLayout());
@@ -64,40 +54,50 @@ public class AlarmGUI extends JFrame implements Runnable, ActionListener {
 
         cont.add(new JLabel("Select Time:"));
         cont.add(time);
+		
+		textField = new JTextField(10);
+
+		cont.add(new JLabel("Set Label:"));
+		cont.add(textField);
 
         cont.add(btn);
-        //cont.add(cancelBtn);
-        //cont.add(listBtn);
-
     }
 
-    //Used in AlarmsViewer to update time
-    public int getReturnHour(){
-        return this.returnHour;
-    }
-
-    //Used in AlarmsViewer to update time
-    public int getReturnMinute(){
-        return this.returnMinute;
-    }
-
-    public void actionPerformed(ActionEvent e) {
+    @SuppressWarnings("deprecation")
+	public void actionPerformed(ActionEvent e) {
         String temp = e.getActionCommand();
 
         if(temp == "Save Alarm"){
+        	//get the time selected in the spinner
             Date date = (Date)time.getModel().getValue();
-            AlarmClock a = new AlarmClock();
+            
+            //create a new alarmClock object
+            AlarmClock a = new AlarmClock(date);
+            
+            //set the alarm
             a.setInputHour(date.getHours());
             a.setInputMinute(date.getMinutes());
-            a.setAlarmLabel("Alarm");
+			if(textField.getText()==null || textField.getText().equals("")){
+				a.setAlarmLabel("Alarm");
+			}
+			else{
+				a.setAlarmLabel(textField.getText());
+			}
             a.setAlarmSet(true);
+            
+            //start the alarm thread
             Gui.alarms.spawnNewThread(a);
-            //System.out.println(a.getAlarmID());
-            //System.out.println(a.getInputMinute());
-            JOptionPane.showMessageDialog(null, "Alarm set for: " + a.getInputHour() + ":" + a.getInputMinute());
-            returnHour = a.getInputHour();
-            returnMinute = a.getInputHour();
+            
+            //add the new alarm to the list
             Gui.alarmList.addNewElement(a.getAlarmID());
+            
+            //notify the user an alarm has been set
+			if(a.getInputMinute() < 10){
+				JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":0" + a.getInputMinute());
+			}
+			else{
+				JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":" + a.getInputMinute());
+			}
         }
     }
 }
