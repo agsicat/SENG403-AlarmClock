@@ -1,95 +1,23 @@
-<<<<<<< HEAD
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JButton;
-import java.awt.Font;
-import javax.swing.AbstractListModel;
-import javax.swing.JScrollPane;
-import javax.swing.JScrollBar;
-
-
-public class AlarmsViewer {
-
-	private JFrame frame;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AlarmsViewer window = new AlarmsViewer();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the application.
-	 */
-	public AlarmsViewer() {
-		initialize();
-	}
-
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
-		
-		JLabel lblAlarms = new JLabel("Alarms");
-		lblAlarms.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lblAlarms.setBounds(182, 26, 68, 14);
-		frame.getContentPane().add(lblAlarms);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(48, 51, 341, 115);
-		frame.getContentPane().add(scrollPane);
-		
-		JList list = new JList();
-		scrollPane.setViewportView(list);
-		list.setValueIsAdjusting(true);
-		list.setModel(new AbstractListModel() {
-			String[] values = new String[] {"ex 1", "ex 2", "ex 3", "ex 4", "ex 5", "ex 6", "ex 7", "ex 8", "ex 9", "ex 10"};
-			public int getSize() {
-				return values.length;
-			}
-			public Object getElementAt(int index) {
-				return values[index];
-			}
-		});
-		
-		JButton btnCancel = new JButton("Cancel");
-		btnCancel.setBounds(279, 193, 89, 23);
-		frame.getContentPane().add(btnCancel);
-		
-		JButton btnEdit = new JButton("Edit");
-		btnEdit.setBounds(66, 193, 89, 23);
-		frame.getContentPane().add(btnEdit);
-	}
-}
-=======
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
+
+import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerListModel;
+import javax.swing.SpinnerModel;
 import javax.swing.DefaultListModel;
 
 /**
@@ -98,7 +26,7 @@ import javax.swing.DefaultListModel;
  * @author Ibby
  * @Edit Francisco Garcia, Implemented Edit and Cancel functionality for a single alarm
  * @Edit Aaron Kobelsky, Refactored Edit and Cancel functionalities to support multiple alarms
- * @version 2.0
+ * @version 2.2
  */
 public class AlarmsViewer implements Runnable, ActionListener{
 
@@ -143,11 +71,13 @@ public class AlarmsViewer implements Runnable, ActionListener{
 		frame.getContentPane().add(btnEdit);
 	}
 
+	//there is only a single instance of this GUI so exiting hides it and this function makes it visible again
 	@Override
 	public void run() {
 		frame.setVisible(true);
 	}
 	
+	//add a new element to the list of alarms
 	public void addNewElement(Long ID){
 		dlm.addElement(new listElement(ID));
 	}
@@ -156,13 +86,8 @@ public class AlarmsViewer implements Runnable, ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String temp = e.getActionCommand();
-		int index = dlm.getSize();
-		ArrayList<listElement> elements = new ArrayList<listElement>();
-		for(int i = 0; i < index; i++){
-			elements.add(dlm.get(i));
-		}
 		
-		
+		//if the edit button was selected
 		if (temp == "Edit"){
 			//if there are no currently set alarms, give the user a warning message
 			if(dlm.isEmpty()){
@@ -174,17 +99,13 @@ public class AlarmsViewer implements Runnable, ActionListener{
         		JOptionPane.showMessageDialog(null, "Please select an alarm to edit");
         		return;
         	}
-			
-			//TODO refactor this to use Jeff's change time function
-			//cancel the alarm
-            Gui.alarms.cancelAlarm(alarmsList.getSelectedValue().getAlarmID());
-            dlm.remove(alarmsList.getSelectedIndex());
             
-            //create a new alarm to replace it
-			AlarmGUI ag = new AlarmGUI();
-			ag.run();
+            //create a new edit gui to edit the selected alarm
+			editGUI eg = new editGUI();
+			eg.run();
 
 		}
+		//if the cancel button was selected
         else if (temp == "Cancel") {
         	//if there are no currently set alarms, give the user a warning message
         	if(dlm.isEmpty()){
@@ -196,6 +117,7 @@ public class AlarmsViewer implements Runnable, ActionListener{
         		JOptionPane.showMessageDialog(null, "Please select an alarm to cancel");
         		return;
         	}
+        	//cancel the alarm and remove it from the list
             Gui.alarms.cancelAlarm(alarmsList.getSelectedValue().getAlarmID());
             dlm.remove(alarmsList.getSelectedIndex());
         }
@@ -237,8 +159,8 @@ public class AlarmsViewer implements Runnable, ActionListener{
 		
 		public String toString(){
 			//TODO add display for repeating functionality and day
-			String tempHour = Integer.toBinaryString(alarmHour);
-			String tempMinute = Integer.toBinaryString(alarmMinute);
+			String tempHour = Integer.toString(alarmHour);
+			String tempMinute = Integer.toString(alarmMinute);
 			if(alarmHour < 10){
 	            tempHour = "0"+tempHour;
 	        }
@@ -253,6 +175,102 @@ public class AlarmsViewer implements Runnable, ActionListener{
 		}
 	}
 
+	/**
+	 * Class for displaying a GUI containing alarm edit options
+	 * @author Aaron Kobelsky
+	 */
+	public class editGUI implements Runnable, ActionListener{
+		
+		//JSpinner to indicate the time to change the selected alarm to
+        public JSpinner time;
+        
+        //JTextField to allow the user to input a label for the alarm
+    	public JTextField textField;
 
+        @Override
+        public void run() {
+            JFrame frame = new JFrame("Alarm Menu");
+            frame.setSize(650, 100);
+            frame.setVisible(true);
+            frame.setResizable(false);
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+            //Spinner for days of the week
+            //How do you adjust the size of the text box? I did it a chicky way... Insert some spaces after Monday
+            String[] list = {"Monday       ","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"};
+            SpinnerModel model1 = new SpinnerListModel(list);
+            JSpinner day = new JSpinner(model1);
+
+            //Spinner for the time
+            SpinnerModel model2 = new SpinnerDateModel(new Date(), null, null, Calendar.HOUR_OF_DAY);
+            time = new JSpinner(model2);
+
+            JSpinner.DateEditor de = new JSpinner.DateEditor(time, "HH:mm");
+            time.setEditor(de);
+
+            JButton btn = new JButton("Edit Alarm");
+            btn.addActionListener(this);
+
+            Container cont = frame.getContentPane();
+            cont.setLayout(new FlowLayout());
+
+            cont.add(new JLabel("Select Day:"));
+            cont.add(day);
+
+            cont.add(new JLabel("Select Time:"));
+            cont.add(time);
+            
+            textField = new JTextField(10);
+
+    		cont.add(new JLabel("Set Label:"));
+    		cont.add(textField);
+
+            cont.add(btn);
+        }
+        
+        @SuppressWarnings("deprecation")
+        public void actionPerformed(ActionEvent e) {
+            String temp = e.getActionCommand();
+
+            //if edit alarm button was pressed
+            if(temp == "Edit Alarm"){
+            	
+            	//cancel the selected alarm
+            	Gui.alarms.cancelAlarm(alarmsList.getSelectedValue().getAlarmID());
+     
+            	//create a new alarm with the new time
+                Date date = (Date)time.getModel().getValue();
+                AlarmClock a = new AlarmClock(date);
+                a.setInputHour(date.getHours());
+                a.setInputMinute(date.getMinutes());
+                
+                //set the new alarm's label to match the alarm being edited's label unless a new label has been given
+                if(textField.getText()==null || textField.getText().equals("")){
+    				a.setAlarmLabel(dlm.getElementAt(alarmsList.getSelectedIndex()).alarmLabel);
+    			}
+    			else{
+    				a.setAlarmLabel(textField.getText());
+    			}
+                
+                //set the alarm
+                a.setAlarmSet(true);
+                
+                //spawn a new thread for the alarm
+                Gui.alarms.spawnNewThread(a);
+                
+                //remove the old alarm from the list and replace it with the new alarm
+                dlm.remove(alarmsList.getSelectedIndex());
+                Gui.alarmList.addNewElement(a.getAlarmID());
+                
+                //notify the user the alarm has been set
+				if(a.getInputMinute() < 10){
+					JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":0" + a.getInputMinute());
+				}
+				else{
+					JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":" + a.getInputMinute());
+				}
+         
+            }
+        }
+    }
 }
->>>>>>> refs/remotes/origin/master
