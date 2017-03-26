@@ -18,6 +18,9 @@ public class AlarmGUI implements Runnable, ActionListener {
 
     //JSpinner for selecting a time for the new alarm to ring
     public JSpinner time;
+	
+	//jTextField to allow the user to input a label for the alarm
+	public JTextField textField;
 
     @Override
     public void run() {
@@ -51,6 +54,11 @@ public class AlarmGUI implements Runnable, ActionListener {
 
         cont.add(new JLabel("Select Time:"));
         cont.add(time);
+		
+		textField = new JTextField(10);
+
+		cont.add(new JLabel("Set Label:"));
+		cont.add(textField);
 
         cont.add(btn);
     }
@@ -69,7 +77,12 @@ public class AlarmGUI implements Runnable, ActionListener {
             //set the alarm
             a.setInputHour(date.getHours());
             a.setInputMinute(date.getMinutes());
-            a.setAlarmLabel("Alarm");
+			if(textField.getText()==null || textField.getText().equals("")){
+				a.setAlarmLabel("Alarm");
+			}
+			else{
+				a.setAlarmLabel(textField.getText());
+			}
             a.setAlarmSet(true);
             
             //start the alarm thread
@@ -79,7 +92,12 @@ public class AlarmGUI implements Runnable, ActionListener {
             Gui.alarmList.addNewElement(a.getAlarmID());
             
             //notify the user an alarm has been set
-            JOptionPane.showMessageDialog(null, "Alarm set for: " + a.getInputHour() + ":" + a.getInputMinute());
+			if(a.getInputMinute() < 10){
+				JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":0" + a.getInputMinute());
+			}
+			else{
+				JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":" + a.getInputMinute());
+			}
         }
     }
 }
