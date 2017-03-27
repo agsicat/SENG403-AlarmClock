@@ -89,54 +89,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                BufferedWriter bw = null;
-                FileWriter fw = null;
-
-                int hour;
-                int minute;
-                String label;
-                int day;
-                int dailyRepeat;
-                int weeklyRepeat;
-
-                try {
-
-                    hour = a.getInputHour();
-                    minute = a.getInputMinute();
-                    label = "testLabel";
-                    day = 0;
-                    dailyRepeat = 0;
-                    weeklyRepeat = 0;
-
-
-                    fw = new FileWriter(FILENAME);
-                    bw = new BufferedWriter(fw);
-                    bw.write(hour + "\n" + minute + "\n" + label + "\n" + day + "\n" + dailyRepeat + "\n" + weeklyRepeat + "\n");
-
-                    System.out.println("Done");
-
-                } catch (IOException g) {
-
-                    g.printStackTrace();
-
-                } finally {
-
-                    try {
-
-                        if (bw != null)
-                            bw.close();
-
-                        if (fw != null)
-                            fw.close();
-
-                    } catch (IOException ex) {
-
-                        ex.printStackTrace();
-
-                    }
-
-                }
-
+                writeAlarms();
                 super.windowClosing(e);
             }
         });
@@ -240,7 +193,16 @@ public class Gui extends JFrame implements ActionListener, Runnable{
 
     @Override
     public void run() {
-
+    	AlarmsStartupReader asr = new AlarmsStartupReader();
+    	try {
+			asr.readAndReconstructAlarms();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         //infinite while loop updates the GUI every second so that it always displays the correct time
         while(true){
             //if the time should be displayed in an analog format
@@ -290,5 +252,59 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     public static void main (String[] args){
         Gui g = new Gui();
         g.run();
+    }
+    
+    private void writeAlarms(){
+    	BufferedWriter bw = null;
+        FileWriter fw = null;
+
+        int hour;
+        int minute;
+        String label;
+        int day;
+        int dailyRepeat;
+        int weeklyRepeat;
+
+        try {
+            ArrayList<Long> allThreads = alarms.getAllThreadID();
+
+            fw = new FileWriter(FILENAME);
+            bw = new BufferedWriter(fw);
+            for(int i = 0; i < allThreads.size(); i++){
+            	AlarmClock temp = alarms.getThreadByID(allThreads.get(i)).alarm;
+            	hour = temp.getInputHour();
+                minute = temp.getInputMinute();
+                label = "testLabel";
+                day = 0;
+                dailyRepeat = 0;
+                weeklyRepeat = 0;
+            	bw.write(hour + "\n" + minute + "\n" + label + 
+            			"\n" + day + "\n" + dailyRepeat + "\n" + 
+            			weeklyRepeat + "\n" + "EOA" + "\n");
+            }
+            bw.write("EOF");
+            System.out.println("Done");
+
+        } catch (IOException g) {
+
+            g.printStackTrace();
+
+        } finally {
+
+            try {
+
+                if (bw != null)
+                    bw.close();
+
+                if (fw != null)
+                    fw.close();
+
+            } catch (IOException ex) {
+
+                ex.printStackTrace();
+
+            }
+
+        }
     }
 }
