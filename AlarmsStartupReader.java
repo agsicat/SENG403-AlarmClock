@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Reads in a saved alarms file and reconstructs alarms
@@ -102,7 +103,7 @@ public class AlarmsStartupReader {
 	 */
 	private void constructAlarms(){
 		for(int i = 0; i < numberOfAlarms; i++){
-			AlarmClock a = new AlarmClock();
+			AlarmClock a = new AlarmClock(new Date());
             a.setInputHour(savedVars.get(i).hour);
             a.setInputMinute(savedVars.get(i).minute);
             a.setAlarmLabel(savedVars.get(i).label);

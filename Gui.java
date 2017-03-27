@@ -163,6 +163,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             Image image=Toolkit.getDefaultToolkit().getImage("AlarmClockIcon.png");
             ActionListener exitListener = new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                	writeAlarms();
                     System.exit(0);
                 }
             };
@@ -349,7 +350,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             	AlarmClock temp = alarms.getThreadByID(allThreads.get(i)).alarm;
             	hour = temp.getInputHour();
                 minute = temp.getInputMinute();
-                label = "testLabel";
+                label = temp.getAlarmLabel();
                 day = 0;
                 dailyRepeat = 0;
                 weeklyRepeat = 0;
