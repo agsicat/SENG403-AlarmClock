@@ -5,7 +5,7 @@
  *
  * @author Francisco Garcia
  * @Edit Aaron Kobelsky
- * @version 2.2
+ * @version 3.2
  */
 
 import java.awt.*;
@@ -13,20 +13,46 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JButton;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.AbstractListModel;
+import javax.swing.JScrollPane;
+import javax.swing.JScrollBar;
+import javax.swing.DefaultListModel;
 
 
+@SuppressWarnings("serial")
 public class Gui extends JFrame implements ActionListener, Runnable{
 
     //Variables for GUI Component
     private JFrame frame;
     private JPanel panel;
-    private JButton btnSwitch, btnAlarm;
+    private JButton btnSwitch, btnList, btnAlarm;
     private JLabel label;
     private boolean doAnalogDisplay = false;
+    
+    //TODO this has to go, the text file write function should read out of the alarm list
+    AlarmClock a = new AlarmClock(new Date());
+    
+    private static final String FILENAME = "alarms.txt";
 
     //storage for the alarms in the system
-    private static threadSpawner alarms = new threadSpawner();
-    private long alarmID;
+    public static threadSpawner alarms = new threadSpawner();
+    
+    //list of alarms in the system
+    public static AlarmsViewer alarmList = new AlarmsViewer();
 
     /**
      * Constructor
@@ -41,19 +67,84 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         frame.setSize(700, 500);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        //Source:
+        //http://stackoverflow.com/questions/12601004/do-something-before-window-closes-after-user-presses-x
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                BufferedWriter bw = null;
+                FileWriter fw = null;
+
+                int hour;
+                int minute;
+                String label;
+                int day;
+                int dailyRepeat;
+                int weeklyRepeat;
+
+                try {
+
+                    hour = a.getInputHour();
+                    minute = a.getInputMinute();
+                    label = "testLabel";
+                    day = 0;
+                    dailyRepeat = 0;
+                    weeklyRepeat = 0;
+
+
+                    fw = new FileWriter(FILENAME);
+                    bw = new BufferedWriter(fw);
+                    bw.write(hour + "\n" + minute + "\n" + label + "\n" + day + "\n" + dailyRepeat + "\n" + weeklyRepeat + "\n");
+
+                    System.out.println("Done");
+
+                } catch (IOException g) {
+
+                    g.printStackTrace();
+
+                } finally {
+
+                    try {
+
+                        if (bw != null)
+                            bw.close();
+
+                        if (fw != null)
+                            fw.close();
+
+                    } catch (IOException ex) {
+
+                        ex.printStackTrace();
+
+                    }
+
+                }
+
+                super.windowClosing(e);
+            }
+        });
 
         //Initialize JPanel of the GUI
         panel = new JPanel();
         panel.setLayout(null);
 
+        /*
         //Initialize the first JButton of the GUI
         btnSwitch = new JButton("Switch");
         btnSwitch.addActionListener(this);
         btnSwitch.setBounds(175, 375, 120, 35);
         panel.add(btnSwitch);
+        */
+
+        //Initialize the first JButton of the GUI
+        btnList = new JButton("Alarms List");
+        btnList.addActionListener(this);
+        btnList.setBounds(175, 375, 120, 35);
+        panel.add(btnList);
 
         //Initialize the second JButton of the GUI
-        btnAlarm = new JButton("Alarm");
+        btnAlarm = new JButton("Set an Alarm");
         btnAlarm.addActionListener(this);
         btnAlarm.setBounds(425, 375, 120, 35);
         panel.add(btnAlarm);
@@ -68,7 +159,6 @@ public class Gui extends JFrame implements ActionListener, Runnable{
 
         //Add panel to frame
         frame.add(panel);
-
 
     }
 
@@ -96,15 +186,51 @@ public class Gui extends JFrame implements ActionListener, Runnable{
 
 
         String temp;
+        String tempminute = "";
+        String tempsecond = "";
+        
+        if(10 > (int)time.get(Calendar.MINUTE)){
+        	tempminute = "0"+time.get(Calendar.MINUTE);
+        }
+        else{
+        	tempminute += time.get(Calendar.MINUTE);
+        }
+        
+        if(10 > (int)time.get(Calendar.SECOND)){
+        	tempsecond = "0"+time.get(Calendar.SECOND);
+        }
+        else{
+        	tempsecond += time.get(Calendar.SECOND);
+        }
 
         if(time.get(Calendar.HOUR) == 0){
-            temp =  12 + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " " + AMPM;
+            temp =  12 + ":" + tempminute + ":" + tempsecond + " " + AMPM;
         }
         else {
-            temp =  time.get(Calendar.HOUR) + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " " + AMPM;
+            temp =  time.get(Calendar.HOUR) + ":" + tempminute + ":" + tempsecond + " " + AMPM;
         }
 
         return temp;
+    }
+
+
+    @Override
+    public void run() {
+
+        //infinite while loop updates the GUI every second so that it always displays the correct time
+        while(true){
+            //if the time should be displayed in an analog format
+            if(this.doAnalogDisplay){
+                this.label.setText("Analog Display");
+            }
+            //else the time should be displayed in a digital format
+            else{
+                String date = this.getTime();
+                this.label.setText(date);
+            }
+            //refresh the GUI to reflect the changed contents
+            this.repaint();
+        }
     }
 
     @Override
@@ -116,94 +242,21 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     public void actionPerformed(ActionEvent e) {
         String temp = e.getActionCommand();
 
-        //this button changes whether the time should be displayed in an analog or digital format
+        /*
         if(temp == "Switch"){
             this.doAnalogDisplay = !this.doAnalogDisplay;
         }
+        */
 
-        else if(temp == "Alarm" ){
+        if(temp == "Alarms List"){
+            alarmList.run();
+        }
+
+        else if(temp == "Set an Alarm" ){
             AlarmGUI ag = new AlarmGUI();
-			AlarmsViewer av = new AlarmsViewer();
             ag.run();
         }
     }
-
-
-    /**
-     *  Class creates a new object for the Alarm Menu
-     */
-    public class AlarmGUI extends JFrame implements Runnable, ActionListener{
-
-    	public Date alarmtime = new Date();
-    	public boolean end = false;
-    	public JSpinner time;
-
-        public AlarmGUI(){
-
-        }
-
-        @Override
-        public void run() {
-            JFrame frame = new JFrame("Alarm Menu");
-            frame.setSize(550, 100);
-            frame.setVisible(true);
-            frame.setResizable(false);
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-            //Spinner for days of the week
-            //How do you adjust the size of the text box? I did it a chicky way... Insert some spaces after Monday
-            String[] list = {"Monday       ","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"};
-            SpinnerModel model1 = new SpinnerListModel(list);
-            JSpinner day = new JSpinner(model1);
-
-            //Spinner for the time
-            SpinnerModel model2 = new SpinnerDateModel(alarmtime, null, null, Calendar.HOUR_OF_DAY);
-            time = new JSpinner(model2);
-
-            JSpinner.DateEditor de = new JSpinner.DateEditor(time, "HH:mm");
-            time.setEditor(de);
-
-            //Action Listener within Action Listener? How do you do that?
-            JButton btn = new JButton("Save Alarm");
-            JButton cancelBtn = new JButton("Cancel");
-            btn.addActionListener(this);
-            cancelBtn.addActionListener(this);
-
-            Container cont = frame.getContentPane();
-            cont.setLayout(new FlowLayout());
-
-            cont.add(new JLabel("Select Day:"));
-            cont.add(day);
-
-            cont.add(new JLabel("Select Time:"));
-            cont.add(time);
-
-            cont.add(btn);
-            cont.add(cancelBtn);
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            String temp = e.getActionCommand();
-            if(temp == "Save Alarm"){
-            	Date date = (Date)time.getModel().getValue();
-            	AlarmClock a = new AlarmClock();
-            	a.setInputHour(date.getHours());
-            	a.setInputMinute(date.getMinutes());
-            	a.setAlarmSet(true);
-            	alarmID = alarms.spawnNewThread(a);
-                JOptionPane.showMessageDialog(null, "Alarm set for: "+date.getHours() +":"+ date.getMinutes());
-            }
-
-            else if (temp == "Cancel") {
-                alarms.cancelAlarm(alarmID);
-                JOptionPane.showMessageDialog(null, "Alarm Cancelled");
-            }
-        }
-
-    }
-
-
-
 
     /**
      * Main function of the class
@@ -214,23 +267,4 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         Gui g = new Gui();
         g.run();
     }
-
-    @Override
-	public void run() {
-
-    	 //infinite while loop updates the GUI every second so that it always displays the correct time
-		 while(true){
-			 //if the time should be displayed in an analog format
-			 if(this.doAnalogDisplay){
-				 this.label.setText("Analog Display");
-			 }
-			 //else the time should be displayed in a digital format
-			 else{
-				 String date = this.getTime();
-		         	this.label.setText(date);
-			 }
-			 //refresh the GUI to reflect the changed contents
-         	 this.repaint();
-         }
-	}
 }
