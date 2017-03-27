@@ -7,6 +7,9 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -56,6 +59,15 @@ public class DismissAlarm {
 		frame.getContentPane().setForeground(Color.BLACK);
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+		frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                DismissAlarm.numOfWindows--;
+                super.windowClosing(e);
+            }
+        });
+
 				frame.getContentPane().setLayout(null);
 
 				JLabel lblAlarm = new JLabel("ALARM");
