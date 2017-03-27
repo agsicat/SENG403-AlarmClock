@@ -15,8 +15,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.awt.EventQueue;
 
@@ -42,6 +44,9 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     private JButton btnSwitch, btnList, btnAlarm;
     private JLabel label;
     private boolean doAnalogDisplay = false;
+    private BufferedImage image;
+    private int w,h;
+
     
     //TODO this has to go, the text file write function should read out of the alarm list
     AlarmClock a = new AlarmClock(new Date());
@@ -60,6 +65,17 @@ public class Gui extends JFrame implements ActionListener, Runnable{
      * It creates an instance of the Graphic User Interface
      */
     public Gui(){
+        
+        //reads the image
+        try {
+            image = ImageIO.read(getClass().getResource("alarmclockbg.jpg"));
+            w = image.getWidth();
+            h = image.getHeight();
+
+        } catch (IOException ioe) {
+            System.out.println("Could not read in the pic");
+            //System.exit(0);
+        }
 
         //Initialize JFrame of the GUI
         frame = new JFrame("Alarm Clock");
@@ -126,7 +142,15 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         });
 
         //Initialize JPanel of the GUI
-        panel = new JPanel();
+        panel = new JPanel(){
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(image, 0, 0, this.getWidth(), this.getHeight(), null);
+            }
+        };
+
         panel.setLayout(null);
 
         /*
