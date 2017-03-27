@@ -44,7 +44,7 @@ public class AlarmGUI implements Runnable, ActionListener {
 
         //Spinner for days of the week
         //How do you adjust the size of the text box? I did it a chicky way... Insert some spaces after Monday
-        String[] list = {"Monday       ","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"};
+        String[] list = {"Mon","Tue", "Wed", "Thu", "Fri", "Sat","Sun"};
         SpinnerModel model1 = new SpinnerListModel(list);
         day = new JSpinner(model1);
 
@@ -113,6 +113,37 @@ public class AlarmGUI implements Runnable, ActionListener {
 			else{
 				a.setAlarmLabel(textField.getText());
 			}
+			
+			//set daily/weekly repeating flags
+			if(daily.isSelected()){
+				a.setRepeatDaily(true);
+			}
+			if(weekly.isSelected()){
+				a.setRepeatWeekly(true);
+			}
+			
+			if(day.getModel().getValue().equals("Mon")){
+				a.setInputDay(1);
+			}
+			else if(day.getModel().getValue().equals("Tue")){
+				a.setInputDay(2);
+			}
+			else if(day.getModel().getValue().equals("Wed")){
+				a.setInputDay(3);
+			}
+			else if(day.getModel().getValue().equals("Thu")){
+				a.setInputDay(4);
+			}
+			else if(day.getModel().getValue().equals("Fri")){
+				a.setInputDay(5);
+			}
+			else if(day.getModel().getValue().equals("Sat")){
+				a.setInputDay(6);
+			}
+			else if(day.getModel().getValue().equals("Sun")){
+				a.setInputDay(7);
+			}
+			
             a.setAlarmSet(true);
             
             //start the alarm thread
