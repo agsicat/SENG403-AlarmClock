@@ -19,6 +19,15 @@ public class AlarmGUI implements Runnable, ActionListener {
     //JSpinner for selecting a time for the new alarm to ring
     public JSpinner time;
     
+    //JSpinner for selecting a day for the new alarm
+    public JSpinner day;
+    
+    //Radio button for selecting weekly repeating
+    public JRadioButton weekly;
+    
+    //Radio button for selecting daily repeating
+    public JRadioButton daily;
+    
     //JFrame of this Gui
     public JFrame frame;
 	
@@ -37,7 +46,7 @@ public class AlarmGUI implements Runnable, ActionListener {
         //How do you adjust the size of the text box? I did it a chicky way... Insert some spaces after Monday
         String[] list = {"Monday       ","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"};
         SpinnerModel model1 = new SpinnerListModel(list);
-        JSpinner day = new JSpinner(model1);
+        day = new JSpinner(model1);
 
         //Spinner for the time
         SpinnerModel model2 = new SpinnerDateModel(new Date(), null, null, Calendar.HOUR_OF_DAY);
@@ -62,6 +71,15 @@ public class AlarmGUI implements Runnable, ActionListener {
 
 		cont.add(new JLabel("Set Label:"));
 		cont.add(textField);
+		
+		weekly = new JRadioButton();
+		weekly.setText("Weekly");
+		
+		daily = new JRadioButton();
+		daily.setText("Daily");
+		
+		cont.add(weekly);
+		cont.add(daily);
 
         cont.add(btn);
     }
@@ -71,8 +89,17 @@ public class AlarmGUI implements Runnable, ActionListener {
         String temp = e.getActionCommand();
 
         if(temp == "Save Alarm"){
+        	
+        	//check for erroneous button selections
+        	if(daily.isSelected() && weekly.isSelected()){
+        		JOptionPane.showMessageDialog(null, "An alarm cannot be both Daily and Weekly repeating!");
+        		return;
+        	}
+        	
         	//get the time selected in the spinner
             Date date = (Date)time.getModel().getValue();
+            
+            System.out.println(day.getModel().getValue());
             
             //create a new alarmClock object
             AlarmClock a = new AlarmClock(date);
