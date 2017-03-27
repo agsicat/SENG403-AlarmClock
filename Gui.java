@@ -11,10 +11,7 @@
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -33,6 +30,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.JScrollPane;
 import javax.swing.JScrollBar;
 import javax.swing.DefaultListModel;
+import javax.swing.UIManager;
 
 
 @SuppressWarnings("serial")
@@ -47,15 +45,18 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     private BufferedImage image;
     private int w,h;
 
-    
+
     //TODO this has to go, the text file write function should read out of the alarm list
     AlarmClock a = new AlarmClock(new Date());
-    
+
+    TrayIcon trayIcon;
+    SystemTray tray;
+
     private static final String FILENAME = "alarms.txt";
 
     //storage for the alarms in the system
     public static threadSpawner alarms = new threadSpawner();
-    
+
     //list of alarms in the system
     public static AlarmsViewer alarmList = new AlarmsViewer();
 
@@ -65,7 +66,9 @@ public class Gui extends JFrame implements ActionListener, Runnable{
      * It creates an instance of the Graphic User Interface
      */
     public Gui(){
-        
+
+        super("SystemTray test");
+
         //reads the image
         try {
             image = ImageIO.read(getClass().getResource("alarmclockbg.jpg"));
@@ -83,7 +86,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         frame.setSize(700, 500);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+
         //Source:
         //http://stackoverflow.com/questions/12601004/do-something-before-window-closes-after-user-presses-x
         frame.addWindowListener(new WindowAdapter() {
@@ -137,6 +140,78 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         //Add panel to frame
         frame.add(panel);
 
+
+        /*
+            System tray code authored by Mohammad Faisal
+                -ermohammadfaisal.blogspot.com
+                -facebook.com/m.faisal6621
+            http://stackoverflow.com/questions/7461477/how-to-hide-a-jframe-in-system-tray-of-taskbar
+            * Taken code edited by Matteo Molnar
+        */
+
+        // START OF MINIMIZE TO TRAY CODE - MATTEO
+        // ---------------------------------------
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            System.out.println("Unable to set LookAndFeel");
+        }
+
+        if (SystemTray.isSupported()) {
+            tray=SystemTray.getSystemTray();
+
+            Image image=Toolkit.getDefaultToolkit().getImage("AlarmClockIcon.png");
+            ActionListener exitListener = new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    System.exit(0);
+                }
+            };
+
+            PopupMenu popup = new PopupMenu();
+            MenuItem defaultItem=new MenuItem("Exit");
+            defaultItem.addActionListener(exitListener);
+            popup.add(defaultItem);
+
+            defaultItem=new MenuItem("Open");
+            defaultItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    frame.setVisible(true);
+                    frame.setExtendedState(JFrame.NORMAL);
+                }
+            });
+
+            popup.add(defaultItem);
+            trayIcon=new TrayIcon(image, "Alarm Clock", popup);
+            trayIcon.setImageAutoSize(true);
+        }
+
+        else {
+            System.out.println("system tray not supported");
+        }
+
+        frame.addWindowStateListener(new WindowStateListener() {
+            public void windowStateChanged(WindowEvent e) {
+                if (e.getNewState() == ICONIFIED || e.getNewState() == 7) {
+                    try {
+                        tray.add(trayIcon);
+                        frame.setVisible(false);
+                    } catch (AWTException ex) {
+                        System.out.println("unable to add to tray");
+                    }
+                }
+
+                if (e.getNewState() == MAXIMIZED_BOTH || e.getNewState() == NORMAL) {
+                    tray.remove(trayIcon);
+                    frame.setVisible(true);
+                }
+            }
+        });
+
+        //http://www.iconsdb.com/icons/preview/white/alarm-clock-2-xxl.png
+        setIconImage(Toolkit.getDefaultToolkit().getImage("AlarmClockIcon.png"));
+        // ----------------------------------
+        // END MINIMIZE TO TRAY CODE - MATTEO
+
     }
 
     /**
@@ -165,14 +240,14 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         String temp;
         String tempminute = "";
         String tempsecond = "";
-        
+
         if(10 > (int)time.get(Calendar.MINUTE)){
         	tempminute = "0"+time.get(Calendar.MINUTE);
         }
         else{
         	tempminute += time.get(Calendar.MINUTE);
         }
-        
+
         if(10 > (int)time.get(Calendar.SECOND)){
         	tempsecond = "0"+time.get(Calendar.SECOND);
         }
@@ -253,7 +328,7 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         Gui g = new Gui();
         g.run();
     }
-    
+
     private void writeAlarms(){
     	BufferedWriter bw = null;
         FileWriter fw = null;
@@ -278,8 +353,8 @@ public class Gui extends JFrame implements ActionListener, Runnable{
                 day = 0;
                 dailyRepeat = 0;
                 weeklyRepeat = 0;
-            	bw.write(hour + "\n" + minute + "\n" + label + 
-            			"\n" + day + "\n" + dailyRepeat + "\n" + 
+            	bw.write(hour + "\n" + minute + "\n" + label +
+            			"\n" + day + "\n" + dailyRepeat + "\n" +
             			weeklyRepeat + "\n" + "EOA" + "\n");
             }
             bw.write("EOF");
