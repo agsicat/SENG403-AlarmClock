@@ -22,6 +22,8 @@ public class AlarmClock{
 	
 	private DismissAlarm d;
 	
+	private Date alarmTime;
+	
 	private int inputHour;
 	private int inputMinute;
 	private Calendar inputDate;
@@ -39,8 +41,8 @@ public class AlarmClock{
 	private String alarmLabel;
 
 	// constructor
-
-	AlarmClock(){
+	public AlarmClock(Date d){
+		alarmTime = d;
 		currentDate = LocalDate.of(2017,1,1);
 		currentTime = LocalTime.of(0, 0); 
 		
@@ -146,6 +148,10 @@ public class AlarmClock{
 	
 	public String getAlarmLabel(){
 		return this.alarmLabel;
+	}
+	
+	public Date getAlarmDate(){
+		return this.alarmTime;
 	}
 
 }

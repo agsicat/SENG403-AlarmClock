@@ -18,13 +18,16 @@ public class AlarmGUI implements Runnable, ActionListener {
 
     //JSpinner for selecting a time for the new alarm to ring
     public JSpinner time;
+    
+    //JFrame of this Gui
+    public JFrame frame;
 	
 	//JTextField to allow the user to input a label for the alarm
 	public JTextField textField;
 
     @Override
     public void run() {
-        JFrame frame = new JFrame("Alarm Menu");
+        frame = new JFrame("Alarm Menu");
         frame.setSize(650, 100);
         frame.setVisible(true);
         frame.setResizable(false);
@@ -98,6 +101,9 @@ public class AlarmGUI implements Runnable, ActionListener {
 			else{
 				JOptionPane.showMessageDialog(null, "Alarm set for " + a.getInputHour() + ":" + a.getInputMinute());
 			}
+			
+			//close the gui
+			frame.dispose();
         }
     }
 }

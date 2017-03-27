@@ -9,12 +9,15 @@
  */
 
 import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-
-import javax.swing.JOptionPane;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -29,11 +32,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JScrollBar;
 import javax.swing.DefaultListModel;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 
-public class Gui extends JFrame implements ActionListener, Runnable {
+@SuppressWarnings("serial")
+public class Gui extends JFrame implements ActionListener, Runnable{
 
     //Variables for GUI Component
     private JFrame frame;
@@ -41,12 +42,17 @@ public class Gui extends JFrame implements ActionListener, Runnable {
     private JButton btnSwitch, btnList, btnAlarm;
     private JLabel label;
     private boolean doAnalogDisplay = false;
-    AlarmClock a = new AlarmClock();
+    
+    //TODO this has to go, the text file write function should read out of the alarm list
+    AlarmClock a = new AlarmClock(new Date());
+    
+    private static final String FILENAME = "alarms.txt";
 
     //storage for the alarms in the system
     public static threadSpawner alarms = new threadSpawner();
-
-    private static final String FILENAME = "alarms.txt";
+    
+    //list of alarms in the system
+    public static AlarmsViewer alarmList = new AlarmsViewer();
 
     /**
      * Constructor
@@ -60,9 +66,8 @@ public class Gui extends JFrame implements ActionListener, Runnable {
         frame.setVisible(true);
         frame.setSize(700, 500);
         frame.setResizable(false);
-
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        
         //Source:
         //http://stackoverflow.com/questions/12601004/do-something-before-window-closes-after-user-presses-x
         frame.addWindowListener(new WindowAdapter() {
@@ -244,12 +249,11 @@ public class Gui extends JFrame implements ActionListener, Runnable {
         */
 
         if(temp == "Alarms List"){
-            AlarmsViewer av = new AlarmsViewer(a);
-            av.run();
+            alarmList.run();
         }
 
         else if(temp == "Set an Alarm" ){
-            AlarmGUI ag = new AlarmGUI(a);
+            AlarmGUI ag = new AlarmGUI();
             ag.run();
         }
     }
