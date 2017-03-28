@@ -351,9 +351,13 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             	hour = temp.getInputHour();
                 minute = temp.getInputMinute();
                 label = temp.getAlarmLabel();
-                day = 0;
+                day = temp.getInputDay();
                 dailyRepeat = 0;
                 weeklyRepeat = 0;
+                if(temp.getRepeatDaily())
+                	dailyRepeat = 1;
+                if(temp.getRepeatWeekly())
+                	weeklyRepeat = 1;
             	bw.write(hour + "\n" + minute + "\n" + label +
             			"\n" + day + "\n" + dailyRepeat + "\n" +
             			weeklyRepeat + "\n" + "EOA" + "\n");
