@@ -1,10 +1,10 @@
 11		//Hour set for alarm (Format: int) (Allowable values: 0 to 23 inclusive)
 22		//Minute set for alarm (Format: int) (Allowable values: 0 to 59 inclusive)
 abc		//Alarm label (Format: String)(Allowable values: Any string with no special characters e.g: backslashes, brackets, etc)
-00		//Date (Format: tentative to change)
-0		  //Repeating daily (Format: int) (Allowable values: 0 for false, 1 for true)
-1		  //Repeating weekly (Format: int) (Allowable values: 0 for false, 1 for true)
-EOA   //END OF AN ALARM
+0		//Day of the week (Format: int)(Allowable values: 1 to 7 inclusive: 1 for Monday, 7 for Sunday)
+0		//Repeating daily (Format: int) (Allowable values: 0 for false, 1 for true)
+1		//Repeating weekly (Format: int) (Allowable values: 0 for false, 1 for true)
+EOA     //END OF AN ALARM
 12		//Second alarm (format is same as the first alarm)
 33
 def
@@ -12,7 +12,7 @@ def
 1
 0
 EOA
-EOF   //END OF FILE
+EOF     //END OF FILE
 //Note:
 //The comments are for your convienence only. There will be no comments in the actual save file
 //Each variable is on a new line (thats how we will differentiate one variable from another)

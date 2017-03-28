@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * Reads in a saved alarms file and reconstructs alarms
  * @author Jeffery
- * @version 0.9.1
+ * @version 1.0
  */
 public class AlarmsStartupReader {
 	
@@ -107,6 +107,11 @@ public class AlarmsStartupReader {
             a.setInputHour(savedVars.get(i).hour);
             a.setInputMinute(savedVars.get(i).minute);
             a.setAlarmLabel(savedVars.get(i).label);
+            a.setInputDay(savedVars.get(i).dayOfWeek);
+            if(savedVars.get(i).repeatDaily == 1)
+            	a.setRepeatDaily(true);
+            if(savedVars.get(i).repeatWeekly == 1)
+            	a.setRepeatWeekly(true);
             a.setAlarmSet(true);
             Gui.alarms.spawnNewThread(a);
             Gui.alarmList.addNewElement(a.getAlarmID());
