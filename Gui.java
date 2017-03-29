@@ -5,27 +5,60 @@
  *
  * @author Francisco Garcia
  * @Edit Aaron Kobelsky
- * @version 2.2
+ * @version 3.2
  */
 
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JButton;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.AbstractListModel;
+import javax.swing.JScrollPane;
+import javax.swing.JScrollBar;
+import javax.swing.DefaultListModel;
+import javax.swing.UIManager;
 
 
+@SuppressWarnings("serial")
 public class Gui extends JFrame implements ActionListener, Runnable{
 
     //Variables for GUI Component
     private JFrame frame;
     private JPanel panel;
-    private JButton btnSwitch, btnAlarm;
+    private JButton btnSwitch, btnList, btnAlarm;
     private JLabel label;
     private boolean doAnalogDisplay = false;
-    
+    private BufferedImage image;
+    private int w,h;
+
+
+    //TODO this has to go, the text file write function should read out of the alarm list
+    AlarmClock a = new AlarmClock(new Date());
+
+    TrayIcon trayIcon;
+    SystemTray tray;
+
+    private static final String FILENAME = "alarms.txt";
+
     //storage for the alarms in the system
-    private static threadSpawner alarms = new threadSpawner();
+    public static threadSpawner alarms = new threadSpawner();
+
+    //list of alarms in the system
+    public static AlarmsViewer alarmList = new AlarmsViewer();
 
     /**
      * Constructor
@@ -34,6 +67,19 @@ public class Gui extends JFrame implements ActionListener, Runnable{
      */
     public Gui(){
 
+        super("SystemTray test");
+
+        //reads the image
+        try {
+            image = ImageIO.read(getClass().getResource("alarmclockbg.jpg"));
+            w = image.getWidth();
+            h = image.getHeight();
+
+        } catch (IOException ioe) {
+            System.out.println("Could not read in the pic");
+            //System.exit(0);
+        }
+
         //Initialize JFrame of the GUI
         frame = new JFrame("Alarm Clock");
         frame.setVisible(true);
@@ -41,18 +87,44 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        //Source:
+        //http://stackoverflow.com/questions/12601004/do-something-before-window-closes-after-user-presses-x
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                writeAlarms();
+                super.windowClosing(e);
+            }
+        });
+
         //Initialize JPanel of the GUI
-        panel = new JPanel();
+        panel = new JPanel(){
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(image, 0, 0, this.getWidth(), this.getHeight(), null);
+            }
+        };
+
         panel.setLayout(null);
 
+        /*
         //Initialize the first JButton of the GUI
         btnSwitch = new JButton("Switch");
         btnSwitch.addActionListener(this);
         btnSwitch.setBounds(175, 375, 120, 35);
         panel.add(btnSwitch);
+        */
+
+        //Initialize the first JButton of the GUI
+        btnList = new JButton("Alarms List");
+        btnList.addActionListener(this);
+        btnList.setBounds(175, 375, 120, 35);
+        panel.add(btnList);
 
         //Initialize the second JButton of the GUI
-        btnAlarm = new JButton("Alarm");
+        btnAlarm = new JButton("Set an Alarm");
         btnAlarm.addActionListener(this);
         btnAlarm.setBounds(425, 375, 120, 35);
         panel.add(btnAlarm);
@@ -68,6 +140,78 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         //Add panel to frame
         frame.add(panel);
 
+
+        /*
+            System tray code authored by Mohammad Faisal
+                -ermohammadfaisal.blogspot.com
+                -facebook.com/m.faisal6621
+            http://stackoverflow.com/questions/7461477/how-to-hide-a-jframe-in-system-tray-of-taskbar
+            * Taken code edited by Matteo Molnar
+        */
+
+        // START OF MINIMIZE TO TRAY CODE - MATTEO
+        // ---------------------------------------
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            System.out.println("Unable to set LookAndFeel");
+        }
+
+        if (SystemTray.isSupported()) {
+            tray=SystemTray.getSystemTray();
+
+            Image image=Toolkit.getDefaultToolkit().getImage("AlarmClockIcon.png");
+            ActionListener exitListener = new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                	writeAlarms();
+                    System.exit(0);
+                }
+            };
+
+            PopupMenu popup = new PopupMenu();
+            MenuItem defaultItem=new MenuItem("Exit");
+            defaultItem.addActionListener(exitListener);
+            popup.add(defaultItem);
+
+            defaultItem=new MenuItem("Open");
+            defaultItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    frame.setVisible(true);
+                    frame.setExtendedState(JFrame.NORMAL);
+                }
+            });
+
+            popup.add(defaultItem);
+            trayIcon=new TrayIcon(image, "Alarm Clock", popup);
+            trayIcon.setImageAutoSize(true);
+        }
+
+        else {
+            System.out.println("system tray not supported");
+        }
+
+        frame.addWindowStateListener(new WindowStateListener() {
+            public void windowStateChanged(WindowEvent e) {
+                if (e.getNewState() == ICONIFIED || e.getNewState() == 7) {
+                    try {
+                        tray.add(trayIcon);
+                        frame.setVisible(false);
+                    } catch (AWTException ex) {
+                        System.out.println("unable to add to tray");
+                    }
+                }
+
+                if (e.getNewState() == MAXIMIZED_BOTH || e.getNewState() == NORMAL) {
+                    tray.remove(trayIcon);
+                    frame.setVisible(true);
+                }
+            }
+        });
+
+        //http://www.iconsdb.com/icons/preview/white/alarm-clock-2-xxl.png
+        setIconImage(Toolkit.getDefaultToolkit().getImage("AlarmClockIcon.png"));
+        // ----------------------------------
+        // END MINIMIZE TO TRAY CODE - MATTEO
 
     }
 
@@ -95,15 +239,60 @@ public class Gui extends JFrame implements ActionListener, Runnable{
 
 
         String temp;
+        String tempminute = "";
+        String tempsecond = "";
+
+        if(10 > (int)time.get(Calendar.MINUTE)){
+        	tempminute = "0"+time.get(Calendar.MINUTE);
+        }
+        else{
+        	tempminute += time.get(Calendar.MINUTE);
+        }
+
+        if(10 > (int)time.get(Calendar.SECOND)){
+        	tempsecond = "0"+time.get(Calendar.SECOND);
+        }
+        else{
+        	tempsecond += time.get(Calendar.SECOND);
+        }
 
         if(time.get(Calendar.HOUR) == 0){
-            temp =  12 + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " " + AMPM;
+            temp =  12 + ":" + tempminute + ":" + tempsecond + " " + AMPM;
         }
         else {
-            temp =  time.get(Calendar.HOUR) + ":" + time.get(Calendar.MINUTE) + ":" + time.get(Calendar.SECOND) + " " + AMPM;
+            temp =  time.get(Calendar.HOUR) + ":" + tempminute + ":" + tempsecond + " " + AMPM;
         }
 
         return temp;
+    }
+
+
+    @Override
+    public void run() {
+    	AlarmsStartupReader asr = new AlarmsStartupReader();
+    	try {
+			asr.readAndReconstructAlarms();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        //infinite while loop updates the GUI every second so that it always displays the correct time
+        while(true){
+            //if the time should be displayed in an analog format
+            if(this.doAnalogDisplay){
+                this.label.setText("Analog Display");
+            }
+            //else the time should be displayed in a digital format
+            else{
+                String date = this.getTime();
+                this.label.setText(date);
+            }
+            //refresh the GUI to reflect the changed contents
+            this.repaint();
+        }
     }
 
     @Override
@@ -115,85 +304,21 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     public void actionPerformed(ActionEvent e) {
         String temp = e.getActionCommand();
 
-        //this button changes whether the time should be displayed in an analog or digital format
+        /*
         if(temp == "Switch"){
             this.doAnalogDisplay = !this.doAnalogDisplay;
         }
+        */
 
-        else if(temp == "Alarm" ){
+        if(temp == "Alarms List"){
+            alarmList.run();
+        }
+
+        else if(temp == "Set an Alarm" ){
             AlarmGUI ag = new AlarmGUI();
             ag.run();
         }
     }
-
-
-    /**
-     *  Class creates a new object for the Alarm Menu
-     */
-    public class AlarmGUI extends JFrame implements Runnable, ActionListener{
-
-    	public Date alarmtime = new Date();
-    	public boolean end = false;
-    	public JSpinner time;
-
-        @Override
-        public void run() {
-            JFrame frame = new JFrame("Alarm Menu");
-            frame.setSize(500, 100);
-            frame.setVisible(true);
-            frame.setResizable(false);
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-            //Spinner for days of the week
-            //How do you adjust the size of the text box? I did it a chicky way... Insert some spaces after Monday
-            String[] list = {"Monday       ","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"};
-            SpinnerModel model1 = new SpinnerListModel(list);
-            JSpinner day = new JSpinner(model1);
-
-            //Spinner for the time
-            SpinnerModel model2 = new SpinnerDateModel(alarmtime, null, null, Calendar.HOUR_OF_DAY);
-            time = new JSpinner(model2);
-
-            JSpinner.DateEditor de = new JSpinner.DateEditor(time, "HH:mm");
-            time.setEditor(de);
-
-            //Action Listener within Action Listener? How do you do that?
-            JButton btn = new JButton("Save Alarm");
-            btn.addActionListener(this);
-
-            Container cont = frame.getContentPane();
-            cont.setLayout(new FlowLayout());
-
-            cont.add(new JLabel("Select Day:"));
-            cont.add(day);
-
-            cont.add(new JLabel("Select Time:"));
-            cont.add(time);
-
-            cont.add(btn);
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            String temp = e.getActionCommand();
-            //when the save alarm button is played
-            if(temp == "Save Alarm"){
-            	//retrieve the time the alarm was set for from the spinner
-            	Date date = (Date)time.getModel().getValue();
-            	//create a new alarm clock and start it in a thread
-            	AlarmClock a = new AlarmClock();
-            	a.setInputHour(date.getHours());
-            	a.setInputMinute(date.getMinutes());
-            	a.setAlarmSet(true);
-            	alarms.spawnNewThread(a);
-            	//display for the user what time the alarm was set for
-                JOptionPane.showMessageDialog(null, "Alarm set for: "+date.getHours() +":"+ date.getMinutes());
-            }
-        }
-
-    }
-
-    
-
 
     /**
      * Main function of the class
@@ -204,23 +329,58 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         Gui g = new Gui();
         g.run();
     }
-    
-    @Override
-	public void run() {
-		
-    	 //infinite while loop updates the GUI every second so that it always displays the correct time
-		 while(true){
-			 //if the time should be displayed in an analog format
-			 if(this.doAnalogDisplay){
-				 this.label.setText("Analog Display");
-			 }
-			 //else the time should be displayed in a digital format
-			 else{
-				 String date = this.getTime();
-		         	this.label.setText(date);
-			 }
-			 //refresh the GUI to reflect the changed contents
-         	 this.repaint();
-         }
-	}
+
+    private void writeAlarms(){
+    	BufferedWriter bw = null;
+        FileWriter fw = null;
+
+        int hour;
+        int minute;
+        String label;
+        int day;
+        int dailyRepeat;
+        int weeklyRepeat;
+
+        try {
+            ArrayList<Long> allThreads = alarms.getAllThreadID();
+
+            fw = new FileWriter(FILENAME);
+            bw = new BufferedWriter(fw);
+            for(int i = 0; i < allThreads.size(); i++){
+            	AlarmClock temp = alarms.getThreadByID(allThreads.get(i)).alarm;
+            	hour = temp.getInputHour();
+                minute = temp.getInputMinute();
+                label = temp.getAlarmLabel();
+                day = 0;
+                dailyRepeat = 0;
+                weeklyRepeat = 0;
+            	bw.write(hour + "\n" + minute + "\n" + label +
+            			"\n" + day + "\n" + dailyRepeat + "\n" +
+            			weeklyRepeat + "\n" + "EOA" + "\n");
+            }
+            bw.write("EOF");
+            System.out.println("Done");
+
+        } catch (IOException g) {
+
+            g.printStackTrace();
+
+        } finally {
+
+            try {
+
+                if (bw != null)
+                    bw.close();
+
+                if (fw != null)
+                    fw.close();
+
+            } catch (IOException ex) {
+
+                ex.printStackTrace();
+
+            }
+
+        }
+    }
 }

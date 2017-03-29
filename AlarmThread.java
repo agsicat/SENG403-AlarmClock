@@ -1,3 +1,5 @@
+import java.util.concurrent.TimeUnit;
+
 /**
  * Thread which contains an alarm clock object and checks to see if it is time for the alarm to ring
  * once per second
@@ -38,5 +40,16 @@ public class AlarmThread extends Thread{
 				//Ignore
 			}
 		}
+	}
+	
+	public void snooze(){
+		try {
+			//TimeUnit.SECONDS.sleep(5);
+			this.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		new DismissAlarm(alarm.getAlarmID());
 	}
 }
