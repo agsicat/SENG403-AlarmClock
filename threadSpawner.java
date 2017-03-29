@@ -1,37 +1,47 @@
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 /**
  * Class that creates threads and maps their IDs
  * Can also destroy a thread in the mapping given the ID
- * Properly dismisses and cancels alarm thread upon calling 
+ * Properly dismisses and cancels alarm thread upon calling
  * respective "dismiss" and "cancel" functions
  * 
- * Version 3.2
- */
+ * New in version 4.0
+ * Change alarm function
+ *
+ * @author Jeff
+ * @edit Aaron Kobelsky
+ * @version 4.0
+ **/
 public class threadSpawner {
-	
+
 	//maps the thread ID with the actual thread
 	public HashMap<Long, AlarmThread> threadID;
-	
+
 	//constructor
 	public threadSpawner(){
 		threadID = new HashMap<>();
 	}
-	
+
 	/**
 	 * Spawns a new thread to run one alarm clock object
-	 * 
+	 *
+	 * @edit Aaron Kobelsky - Changed HashCode for storage from ThreadID to AlarmID
 	 * @param a		The alarm clock object
 	 * @return		The thread ID of the spawned thread
 	 */
 	public Long spawnNewThread(AlarmClock a){
 		AlarmThread newThread = new AlarmThread(a);
 		newThread.start();
-		threadID.put(newThread.getId(), newThread);
-		
-		return newThread.getId();
+		//use the alarm's unique ID for storage
+		threadID.put(a.getAlarmID(), newThread);
+
+		return a.getAlarmID();
 	}
-	
+
 	/**
 	 * Stops a thread
 	 * @param id	The ID of the thread to be stopped
@@ -40,7 +50,7 @@ public class threadSpawner {
 		threadID.get(id).terminate = true;
 		threadID.remove(id);
 	}
-	
+
 	/**
 	 * Gets a list of IDs of all threads
 	 * @return The list of IDs
@@ -48,7 +58,7 @@ public class threadSpawner {
 	public ArrayList<Long> getAllThreadID(){
 		return new ArrayList<Long>(threadID.keySet());
 	}
-	
+
 	/**
 	 * Retrieves a thread
 	 * @param id 	ID of the thread to be retrieved
@@ -58,30 +68,95 @@ public class threadSpawner {
 		return threadID.get(id);
 	}
 	
-	// Angela Sicat: Method called when an alarm is to be dismissed when 'ringing', sets checkAlarm to false
-		public void dismissAlarm(Long id) {
+	// Angela Sicat: Method called when an alarm is to be snoozed when 'ringing'
+		public void snoozeAlarm(Long id) {
 			if (getThreadByID(id).alarm.checkAlarm() == false)
 				System.out.println("An alarm is not ringing!");
 			else
 			{
-				getThreadByID(id).alarm.setCheckRing(false);
-				getThreadByID(id).alarm.setAlarmSet(false);
-				this.stopThread(id);
-				System.out.println("The current alarm has been dismissed");
+				getThreadByID(id).snooze();
+				/*try {
+					//TimeUnit.SECONDS.sleep(5);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}*/
+				
+				//Calendar tempTime = new GregorianCalendar();
+				
+				//Check to see how long the sleep runs for - 5 Seconds
+				//System.out.println("The current alarm has been snoozed for " + tempTime.get(Calendar.HOUR) + ":" + tempTime.get(Calendar.MINUTE) + ":" +tempTime.get(Calendar.SECOND));
+				
+				//new DismissAlarm(id);
 			}
 		}
-	
+
+	// Angela Sicat: Method called when an alarm is to be dismissed when 'ringing', sets checkAlarm to false
+	public void dismissAlarm(Long id) {
+		if (!getThreadByID(id).alarm.getRepeatDaily() && !getThreadByID(id).alarm.getRepeatWeekly()){
+			cancelAlarm(id);
+			return;
+		}
+		if (getThreadByID(id).alarm.checkAlarm() == false)
+			System.out.println("An alarm is not ringing!");
+		else if (getThreadByID(id).alarm.getRepeatDaily()){
+			getThreadByID(id).alarm.setCheckRing(false);
+			return;
+		}
+		else if (getThreadByID(id).alarm.getRepeatWeekly()){
+			getThreadByID(id).alarm.setCheckRing(false);
+			return;
+		}
+		else
+		{
+			getThreadByID(id).alarm.setCheckRing(false);
+			getThreadByID(id).alarm.setAlarmSet(false);
+			this.stopThread(id);
+			System.out.println("The current alarm has been dismissed");
+		}
+	}
+
 	// Matteo Molnar: method called when an alarm is to be cancelled, sets alarmSet to false
-		public void cancelAlarm(Long id) {
-			if (getThreadByID(id).alarm.getAlarmSet() == false)
-				System.out.println("No alarm is set to cancel");
-			else
-			{
-				getThreadByID(id).alarm.setAlarmSet(false);
-				getThreadByID(id).alarm.setInputHour(0);
-				getThreadByID(id).alarm.setInputMinute(0);
-				this.stopThread(id);
-				System.out.println("The current alarm has been cancelled");
-			}
+	public void cancelAlarm(Long id) {
+		if (getThreadByID(id).alarm.getAlarmSet() == false)
+			System.out.println("No alarm is set to cancel");
+		else
+		{
+			getThreadByID(id).alarm.setAlarmSet(false);
+			getThreadByID(id).alarm.setInputHour(0);
+			getThreadByID(id).alarm.setInputMinute(0);
+			this.stopThread(id);
+			System.out.println("The current alarm has been cancelled");
 		}
+	}
+
+	/**
+	 * Changes the time of an alarm
+	 * @param id		ID of the alarm to be changed
+	 * @param hour		New hour to be set (put 0 if not changing)
+	 * @param minute	New minute to be set (put 0 if not changing)
+	 */
+	public void changeAlarm(Long id, int hour, int minute){
+		boolean changed = false;
+		if(hour > 0){
+			this.changehour(id, hour);
+			changed = true;
+		}
+		if(minute > 0){
+			this.changeminute(id, minute);
+			changed = true;
+		}
+		if(changed == false){
+			//Used for testing purposes only
+			System.out.println("Alarm has not changed or an error has occured");
+		}
+	}
+	
+	private void changehour(Long id, int hour){
+		getThreadByID(id).alarm.setInputHour(hour);
+	}
+	
+	private void changeminute(Long id, int minute){
+		getThreadByID(id).alarm.setInputMinute(minute);
+	}
 }
