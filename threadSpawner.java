@@ -1,17 +1,19 @@
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit; //This is what is used for the sleep call for the Snooze
 /**
  * Class that creates threads and maps their IDs
  * Can also destroy a thread in the mapping given the ID
  * Properly dismisses and cancels alarm thread upon calling
- * respective "dismiss" and "cancel" functions
+ * respective "dismiss", "cancel" and "snooze" functions
  * 
- * New in version 4.0
- * Change alarm function
- *
  * @author Jeff
- * @edit Aaron Kobelsky
- * @version 4.0
+ * @edit Aaron Kobelsky - v4.0 Change alarm function
+ * @edit Angela Sicat - v5.0 Snooze alarm function
+ * @version 5.0
  **/
 public class threadSpawner {
 
@@ -64,7 +66,60 @@ public class threadSpawner {
 	public AlarmThread getThreadByID(Long id){
 		return threadID.get(id);
 	}
+	
+ 	// Angela Sicat: Method called when an alarm is to be snoozed when 'ringing'
+	public void snoozeAlarm(Long id) {
+		if (getThreadByID(id).alarm.checkAlarm() == false)
+			System.out.println("An alarm is not ringing!");
+		else
+		{
 
+			// Get original alarm time
+			int originalAlarmHour = getThreadByID(id).alarm.getInputHour();
+			int originalAlarmMinute = getThreadByID(id).alarm.getInputMinute();
+			
+			int snoozedAlarmHour = 0;
+			int snoozedAlarmMinute = 0;
+			
+			// Add snooze duration to original alarm time
+			
+			if (originalAlarmHour <= 22 && originalAlarmMinute == 59){
+				snoozedAlarmHour = originalAlarmHour + 1;
+				snoozedAlarmMinute = 0;
+				
+			}else if (originalAlarmHour == 23 && originalAlarmMinute == 59){
+				snoozedAlarmHour = 0;
+				snoozedAlarmMinute = 0;
+				
+			}else if (originalAlarmMinute <= 58){
+				snoozedAlarmHour = originalAlarmHour;
+				snoozedAlarmMinute = originalAlarmMinute + 1;
+				
+			}
+			
+			// Make new thread with snoozed alarm time
+        	//date variable for constructing AlarmClock Object
+            Date date = new Date();
+            
+			//create a new AlarmClock object
+            AlarmClock snoozedAlarm = new AlarmClock(date);
+            //set the a new alarm thread with the snoozed time
+            snoozedAlarm.setInputHour(snoozedAlarmHour);
+            snoozedAlarm.setInputMinute(snoozedAlarmMinute);
+            String snoozedAlarmLabel = "Snoozed " + getThreadByID(id).alarm.getAlarmLabel() + " ";
+            snoozedAlarm.setAlarmLabel(snoozedAlarmLabel);
+            
+            snoozedAlarm.setAlarmSet(true);
+            
+            //start the snoozed alarm thread
+            Gui.alarms.spawnNewThread(snoozedAlarm);
+			
+            System.out.println("threadID = " + getThreadByID(id).alarm.getAlarmID());
+            System.out.println("The '" + getThreadByID(id).alarm.getAlarmLabel() + "' alarm has been snoozed until " + snoozedAlarmHour + ":" + snoozedAlarmMinute);
+
+		}
+	}
+	
 	// Angela Sicat: Method called when an alarm is to be dismissed when 'ringing', sets checkAlarm to false
 	public void dismissAlarm(Long id) {
 		if (getThreadByID(id).alarm.checkAlarm() == false)
