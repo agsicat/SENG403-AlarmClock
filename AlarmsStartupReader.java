@@ -3,11 +3,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Reads in a saved alarms file and reconstructs alarms
  * @author Jeffery
- * @version 0.9.1
+ * @version 1.0
  */
 public class AlarmsStartupReader {
 	
@@ -102,10 +103,15 @@ public class AlarmsStartupReader {
 	 */
 	private void constructAlarms(){
 		for(int i = 0; i < numberOfAlarms; i++){
-			AlarmClock a = new AlarmClock();
+			AlarmClock a = new AlarmClock(new Date());
             a.setInputHour(savedVars.get(i).hour);
             a.setInputMinute(savedVars.get(i).minute);
             a.setAlarmLabel(savedVars.get(i).label);
+            a.setInputDay(savedVars.get(i).dayOfWeek);
+            if(savedVars.get(i).repeatDaily == 1)
+            	a.setRepeatDaily(true);
+            if(savedVars.get(i).repeatWeekly == 1)
+            	a.setRepeatWeekly(true);
             a.setAlarmSet(true);
             Gui.alarms.spawnNewThread(a);
             Gui.alarmList.addNewElement(a.getAlarmID());
