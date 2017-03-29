@@ -7,10 +7,15 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Date;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 /**
- * Class that includes the window that pops-up when the 
+ * Class that includes the window that pops-up when the
  * Alarm is ringing.  This connects to the functionality of
  * the "snooze" and "dismiss" button.
  *
@@ -25,6 +30,12 @@ public class DismissAlarm {
 	private JFrame frame;
 
 	private long alarmID;
+
+	public static int numOfWindows = 0;
+	public int xOffset = 50;
+	public int yOffset = 50;
+
+	Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 
 	/**
 	 * Launch the application.
@@ -54,6 +65,14 @@ public class DismissAlarm {
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				DismissAlarm.numOfWindows--;
+				super.windowClosing(e);
+			}
+		});
+
 		JLabel lblAlarm = new JLabel("ALARM");
 		lblAlarm.setBounds(90, 25, 250, 85);
 		lblAlarm.setForeground(Color.RED);
@@ -75,27 +94,33 @@ public class DismissAlarm {
 		frame.getContentPane().add(btnDismiss);
 		frame.setAlwaysOnTop(true);
 
+		int centreX = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
+		int centreY = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
+		frame.setLocation((centreX + (xOffset * numOfWindows)), (centreY + (yOffset * numOfWindows)));
+
+		DismissAlarm.numOfWindows++;
+
 		alarmID = ID;
 	}
 
 	public class RandomActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			String tempButtonName = e.getActionCommand();
-			
+
 			if (tempButtonName == "Snooze") {
 				// Closes window when Snooze is selected
 				frame.dispose();
-				
+
 				// Then runs the Snooze function by passing the alarmID of current alarm to snooze the thread
 				Gui.alarms.snoozeAlarm(alarmID);
-								
+
 			}else if (tempButtonName == "Dismiss") {
 				// Passes the alarmID of current alarm to stop the thread
 				Gui.alarms.dismissAlarm(alarmID);
-				
+
 				// Then closes window when Dismiss is selected
 				frame.dispose();
-				
+
 			}
 
 		}
