@@ -26,7 +26,7 @@ public class AlarmClock{
 	
 	private int inputHour;
 	private int inputMinute;
-	private Calendar inputDate;
+	private int inputDay;
 	
 	private boolean alarmSet = false;
 	private boolean checkRing = false;
@@ -58,25 +58,6 @@ public class AlarmClock{
 		System.out.println("Current time: " + currentTime);
 		return currentTime;
 	}
-	
-	@Deprecated
-	/**
-	 * No longer needed after sprint 2
-	 */
-	public void setAlarm(){
-		
-		alarmSet = true;
-	
-		Scanner kb = new Scanner(System.in);
-	
-		System.out.print("Hour of the alarm (24h time please): ");
-		inputHour = kb.nextInt();
-		System.out.print("Minute of the alarm: ");
-		inputMinute = kb.nextInt();
-		
-		System.out.println("Alarm has been set for " + inputHour + ":" + inputMinute);
-	}
-
 
 	// check the alarm
 	// see if it rings or not
@@ -90,11 +71,38 @@ public class AlarmClock{
 			} 
 			
 			currentTime = LocalTime.now(); // update and get current time 
+			currentDate = LocalDate.now();
 			int hour = currentTime.getHour();
 			int minute = currentTime.getMinute();
+			int day = 0;
+			if(currentDate.getDayOfWeek() == DayOfWeek.MONDAY){
+				day = 1;
+			}
+			else if(currentDate.getDayOfWeek() == DayOfWeek.TUESDAY){
+				day = 2;
+			}
+			else if(currentDate.getDayOfWeek() == DayOfWeek.WEDNESDAY){
+				day = 3;
+			}
+			else if(currentDate.getDayOfWeek() == DayOfWeek.THURSDAY){
+				day = 4;
+			}
+			else if(currentDate.getDayOfWeek() == DayOfWeek.FRIDAY){
+				day = 5;
+			}
+			else if(currentDate.getDayOfWeek() == DayOfWeek.SATURDAY){
+				day = 6;
+			}
+			else if(currentDate.getDayOfWeek() == DayOfWeek.SUNDAY){
+				day = 7;
+			}
+			//error check
+			if(day == 0){
+				return false;
+			}
 			
 			// check if hour and minute is equal to alarm
-			if ((hour == inputHour) && (minute == inputMinute)){
+			if ((hour == inputHour) && (minute == inputMinute) && (day == inputDay)){
 				checkRing = true;
 				//spawn the ringing alarm gui, in future will play ringtone as well
 				d = new DismissAlarm(alarmID);
@@ -153,5 +161,30 @@ public class AlarmClock{
 	public Date getAlarmDate(){
 		return this.alarmTime;
 	}
+	
+	public void setRepeatDaily(boolean D){
+		repeatDaily = D;
+	}
+	
+	public void setRepeatWeekly(boolean W){
+		repeatWeekly = W;
+	}
+	
+	public boolean getRepeatDaily(){
+		return this.repeatDaily;
+	}
+	
+	public boolean getRepeatWeekly(){
+		return this.repeatWeekly;
+	}
+	
+	public void setInputDay(int D){
+		inputDay = D;
+	}
+	
+	public int getInputDay(){
+		return this.inputDay;
+	}
 
 }
+
