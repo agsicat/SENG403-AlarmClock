@@ -57,7 +57,7 @@ public class DismissAlarm {
 				frame.getContentPane().add(lblAlarm);
 						
 								JLabel lblAlarmTime = new JLabel("ALARM TIME");
-								lblAlarmTime.setBounds(184, 121, 61, 14);
+								lblAlarmTime.setBounds(170, 121, 94, 14);
 								frame.getContentPane().add(lblAlarmTime);
 						
 						JButton btnSnooze = new JButton("Snooze");
@@ -66,11 +66,11 @@ public class DismissAlarm {
 								
 							}
 						});
-						btnSnooze.setBounds(145, 166, 67, 23);
+						btnSnooze.setBounds(112, 166, 100, 23);
 						frame.getContentPane().add(btnSnooze);
 						
 								JButton btnDismiss = new JButton("Dismiss");
-								btnDismiss.setBounds(222, 166, 67, 23);
+								btnDismiss.setBounds(222, 166, 100, 23);
 								btnDismiss.addActionListener(new RandomActionListener());
 								frame.getContentPane().add(btnDismiss);
 		frame.setAlwaysOnTop(true);
