@@ -77,12 +77,12 @@ public class threadSpawner {
 			// Get original alarm time
 			int originalAlarmHour = getThreadByID(id).alarm.getInputHour();
 			int originalAlarmMinute = getThreadByID(id).alarm.getInputMinute();
+			int originalAlarmDay = getThreadByID(id).alarm.getInputDay();
 			
 			int snoozedAlarmHour = 0;
 			int snoozedAlarmMinute = 0;
 			
 			// Add snooze duration to original alarm time
-			
 			if (originalAlarmHour <= 22 && originalAlarmMinute == 59){
 				snoozedAlarmHour = originalAlarmHour + 1;
 				snoozedAlarmMinute = 0;
@@ -97,6 +97,7 @@ public class threadSpawner {
 				
 			}
 			
+			
 			// Make new thread with snoozed alarm time
         	//date variable for constructing AlarmClock Object
             Date date = new Date();
@@ -106,6 +107,7 @@ public class threadSpawner {
             //set the a new alarm thread with the snoozed time
             snoozedAlarm.setInputHour(snoozedAlarmHour);
             snoozedAlarm.setInputMinute(snoozedAlarmMinute);
+            snoozedAlarm.setInputDay(originalAlarmDay);
             String snoozedAlarmLabel = "Snoozed " + getThreadByID(id).alarm.getAlarmLabel() + " ";
             snoozedAlarm.setAlarmLabel(snoozedAlarmLabel);
             
@@ -117,6 +119,13 @@ public class threadSpawner {
             System.out.println("threadID = " + getThreadByID(id).alarm.getAlarmID());
             System.out.println("The '" + getThreadByID(id).alarm.getAlarmLabel() + "' alarm has been snoozed until " + snoozedAlarmHour + ":" + snoozedAlarmMinute);
 
+			// Stop snoozed alarm thread(s) (Clean up of the loop of snoozed alarms)
+            if (getThreadByID(id).alarm.getAlarmLabel().contains("Snoozed")){
+            	System.out.println("Dismissing " + getThreadByID(id).alarm.getAlarmLabel() + "to allow the next snooze thread to run");
+            	getThreadByID(id).alarm.setAlarmSet(false);
+    			this.stopThread(id);	
+            }
+            
 		}
 	}
 	
@@ -141,7 +150,7 @@ public class threadSpawner {
 			getThreadByID(id).alarm.setCheckRing(false);
 			getThreadByID(id).alarm.setAlarmSet(false);
 			this.stopThread(id);
-			System.out.println("The current alarm has been dismissed");
+			System.out.println("The " + getThreadByID(id).alarm.getAlarmLabel() + " alarm has been dismissed");
 		}
 	}
 
@@ -155,7 +164,7 @@ public class threadSpawner {
 			getThreadByID(id).alarm.setInputHour(0);
 			getThreadByID(id).alarm.setInputMinute(0);
 			this.stopThread(id);
-			System.out.println("The current alarm has been cancelled");
+			System.out.println("The " + getThreadByID(id).alarm.getAlarmLabel() + " alarm has been cancelled");
 		}
 	}
 
