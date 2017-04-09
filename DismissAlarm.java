@@ -89,8 +89,10 @@ public class DismissAlarm {
 		String h = "";
 		String m = "";
 		String ampm = "";
-		if(hour > 12){
-			hour = hour - 12;
+		if(hour >= 12){
+			if(hour!=12){
+				hour = hour - 12;
+			}
 			ampm = "PM";
 		}
 		else if(hour == 0){
@@ -108,7 +110,7 @@ public class DismissAlarm {
 			m = Integer.toString(min);
 		}
 		JLabel lblAlarmTime = new JLabel(h + ":" + m + " " + ampm);
-		lblAlarmTime.setBounds(170, 121, 94, 25);
+		lblAlarmTime.setBounds(170, 121, 100, 25);
 		lblAlarmTime.setFont(new Font("Serif", Font.PLAIN, 25));
 		panel.add(lblAlarmTime);
 					
@@ -126,9 +128,6 @@ public class DismissAlarm {
 		
 		//add the panel to the frame
 		frame.add(panel);
-		
-		//make sure this GUI always appears on top
-		frame.setAlwaysOnTop(true);
 		
 		//make sure this GUI does not appear directly on top of another dismiss GUI
 		int centreX = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
