@@ -1,7 +1,9 @@
+package alarmGUIs;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -76,16 +78,16 @@ public class DismissAlarm {
 		panel.setBackground(background);
 		
 		//label of the ringing alarm to be displayed on the GUI
-		JLabel lblAlarm = new JLabel(" " + Gui.alarms.getThreadByID(alarmID).alarm.getAlarmLabel());
-		lblAlarm.setBounds(90, 25, 250, 65);
+		JLabel lblAlarm = new JLabel(" " + Gui.alarms.getThreadByID(alarmID).alarm.getAlarmLabel(), SwingConstants.CENTER);
+		lblAlarm.setBounds(30, 25, 360, 65);
 		lblAlarm.setBackground(Color.WHITE);
 		lblAlarm.setOpaque(true);
 		lblAlarm.setFont(new Font("Serif", Font.PLAIN, 50));
 		panel.add(lblAlarm);
 						
 		//display the time the alarm was set for on the GUI
-		int hour = Gui.alarms.getThreadByID(alarmID).alarm.getInputHour();
-		int min = Gui.alarms.getThreadByID(alarmID).alarm.getInputMinute();
+		int hour = Gui.alarms.getThreadByID(alarmID).alarm.getAlarmHour();
+		int min = Gui.alarms.getThreadByID(alarmID).alarm.getAlarmMinute();
 		String h = "";
 		String m = "";
 		String ampm = "";
