@@ -1,14 +1,18 @@
+package alarmStartUpHelpers;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
+
+import alarmClockThreads.AlarmClock;
+import alarmGUIs.Gui;
 
 /**
  * Reads in a saved alarms file and reconstructs alarms
  * @author Jeffery
- * @version 1.0
+ * @version 0.9.1
  */
 public class AlarmsStartupReader {
 	
@@ -20,9 +24,9 @@ public class AlarmsStartupReader {
 		private int hour = 0;
 		private int minute = 0;
 		private String label = "alarm";
-		private int dayOfWeek = 0;
-		private int repeatDaily = 0;
-		private int repeatWeekly = 0;
+		private HashMap<Integer, Boolean> dayOfWeek = new HashMap<Integer, Boolean>();
+		private boolean repeatDaily = false;
+		private boolean repeatWeekly = false;
 		
 		public SavedVariables clone() throws CloneNotSupportedException{
 			return (SavedVariables) super.clone();
@@ -72,28 +76,31 @@ public class AlarmsStartupReader {
 				dataMember++;
 			}
 			else if(dataMember == 3){
-				saved.dayOfWeek = Integer.parseInt(line);
-				//System.out.println(saved.dayOfWeek);
-				dataMember++;
-			}
-			else if(dataMember == 4){
-				saved.repeatDaily = Integer.parseInt(line);
+				if(Integer.parseInt(line) == 1){
+					saved.repeatDaily = true;
+				}
 				//System.out.println(saved.repeatDaily);
 				dataMember++;
 			}
-			else if(dataMember == 5){
-				saved.repeatWeekly = Integer.parseInt(line);
+			else if(dataMember == 4){
+				if(Integer.parseInt(line) == 1){
+					saved.repeatWeekly = true;
+				}
 				//System.out.println(saved.repeatWeekly);
 				dataMember++;
 			}
-			else if(dataMember == 6){
+			else if(dataMember > 4){
 				if(line.equals("EOA")){
 					SavedVariables temp = saved.clone();
 					savedVars.add(temp);
 					saved = new SavedVariables();
 					numberOfAlarms++;
 					dataMember = 0;
+					continue;
 				}
+				saved.dayOfWeek.put(Integer.parseInt(line), true);
+				//System.out.println(saved.dayOfWeek);
+				dataMember++;
 			}
 		}
 	}
@@ -103,15 +110,7 @@ public class AlarmsStartupReader {
 	 */
 	private void constructAlarms(){
 		for(int i = 0; i < numberOfAlarms; i++){
-			AlarmClock a = new AlarmClock(new Date());
-            a.setInputHour(savedVars.get(i).hour);
-            a.setInputMinute(savedVars.get(i).minute);
-            a.setAlarmLabel(savedVars.get(i).label);
-            a.setInputDay(savedVars.get(i).dayOfWeek);
-            if(savedVars.get(i).repeatDaily == 1)
-            	a.setRepeatDaily(true);
-            if(savedVars.get(i).repeatWeekly == 1)
-            	a.setRepeatWeekly(true);
+			AlarmClock a = new AlarmClock(savedVars.get(i).hour, savedVars.get(i).minute, savedVars.get(i).dayOfWeek, savedVars.get(i).repeatDaily, savedVars.get(i).repeatWeekly, savedVars.get(i).label);
             a.setAlarmSet(true);
             Gui.alarms.spawnNewThread(a);
             Gui.alarmList.addNewElement(a.getAlarmID());
