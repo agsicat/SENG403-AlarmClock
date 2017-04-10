@@ -1,9 +1,8 @@
+package alarmClockThreads;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit; //This is what is used for the sleep call for the Snooze
+
+import alarmGUIs.Gui;
 /**
  * Class that creates threads and maps their IDs
  * Can also destroy a thread in the mapping given the ID
@@ -75,9 +74,12 @@ public class threadSpawner {
 		{
 
 			// Get original alarm time
-			int originalAlarmHour = getThreadByID(id).alarm.getInputHour();
-			int originalAlarmMinute = getThreadByID(id).alarm.getInputMinute();
-			int originalAlarmDay = getThreadByID(id).alarm.getInputDay();
+			int originalAlarmHour = getThreadByID(id).alarm.getAlarmHour();
+			int originalAlarmMinute = getThreadByID(id).alarm.getAlarmMinute();
+			HashMap<Integer, Boolean> originalAlarmDay = getThreadByID(id).alarm.getAlarmDays();
+			boolean daily = getThreadByID(id).alarm.getRepeatDaily();
+			boolean weekly = getThreadByID(id).alarm.getRepeatWeekly();
+			String snoozedAlarmLabel = "Snoozed " + getThreadByID(id).alarm.getAlarmLabel() + " ";
 			
 			int snoozedAlarmHour = 0;
 			int snoozedAlarmMinute = 0;
@@ -98,18 +100,9 @@ public class threadSpawner {
 			}
 			
 			
-			// Make new thread with snoozed alarm time
-        	//date variable for constructing AlarmClock Object
-            Date date = new Date();
-            
+			// Make new thread with snoozed alarm time      
 			//create a new AlarmClock object
-            AlarmClock snoozedAlarm = new AlarmClock(date);
-            //set the a new alarm thread with the snoozed time
-            snoozedAlarm.setInputHour(snoozedAlarmHour);
-            snoozedAlarm.setInputMinute(snoozedAlarmMinute);
-            snoozedAlarm.setInputDay(originalAlarmDay);
-            String snoozedAlarmLabel = "Snoozed " + getThreadByID(id).alarm.getAlarmLabel() + " ";
-            snoozedAlarm.setAlarmLabel(snoozedAlarmLabel);
+            AlarmClock snoozedAlarm = new AlarmClock(snoozedAlarmHour, snoozedAlarmMinute, originalAlarmDay, daily, weekly, snoozedAlarmLabel);
             
             snoozedAlarm.setAlarmSet(true);
             
@@ -135,10 +128,16 @@ public class threadSpawner {
 			System.out.println("An alarm is not ringing!");
 		else
 		{
-			getThreadByID(id).alarm.setCheckRing(false);
-			getThreadByID(id).alarm.setAlarmSet(false);
-			this.stopThread(id);
-			System.out.println("The " + getThreadByID(id).alarm.getAlarmLabel() + " alarm has been dismissed");
+			if(getThreadByID(id).alarm.getRepeatDaily() || getThreadByID(id).alarm.getRepeatWeekly()){
+				getThreadByID(id).alarm.setRepeatDismiss(true);
+				getThreadByID(id).alarm.setCheckRing(false);
+			}
+			else{
+				getThreadByID(id).alarm.setCheckRing(false);
+				getThreadByID(id).alarm.setAlarmSet(false);
+				Gui.alarmList.removeElementByID(id);
+				this.stopThread(id);
+			}
 		}
 	}
 
@@ -149,40 +148,7 @@ public class threadSpawner {
 		else
 		{
 			getThreadByID(id).alarm.setAlarmSet(false);
-			getThreadByID(id).alarm.setInputHour(0);
-			getThreadByID(id).alarm.setInputMinute(0);
 			this.stopThread(id);
-			System.out.println("The " + getThreadByID(id).alarm.getAlarmLabel() + " alarm has been cancelled");
 		}
-	}
-
-	/**
-	 * Changes the time of an alarm
-	 * @param id		ID of the alarm to be changed
-	 * @param hour		New hour to be set (put 0 if not changing)
-	 * @param minute	New minute to be set (put 0 if not changing)
-	 */
-	public void changeAlarm(Long id, int hour, int minute){
-		boolean changed = false;
-		if(hour > 0){
-			this.changehour(id, hour);
-			changed = true;
-		}
-		if(minute > 0){
-			this.changeminute(id, minute);
-			changed = true;
-		}
-		if(changed == false){
-			//Used for testing purposes only
-			System.out.println("Alarm has not changed or an error has occured");
-		}
-	}
-	
-	private void changehour(Long id, int hour){
-		getThreadByID(id).alarm.setInputHour(hour);
-	}
-	
-	private void changeminute(Long id, int minute){
-		getThreadByID(id).alarm.setInputMinute(minute);
 	}
 }
