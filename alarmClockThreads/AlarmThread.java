@@ -1,3 +1,5 @@
+package alarmClockThreads;
+
 /**
  * Thread which contains an alarm clock object and checks to see if it is time for the alarm to ring
  * once per second

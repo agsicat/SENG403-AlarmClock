@@ -1,12 +1,4 @@
-/**
- * Class Gui
- *
- * It contains the Graphic User Interface for the Alarm Clock
- *
- * @author Francisco Garcia
- * @Edit Aaron Kobelsky
- * @version 3.2
- */
+package alarmGUIs;
 
 import java.awt.*;
 import java.util.*;
@@ -17,37 +9,38 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import javax.imageio.ImageIO;
 import java.io.IOException;
-import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JButton;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.AbstractListModel;
-import javax.swing.JScrollPane;
-import javax.swing.JScrollBar;
-import javax.swing.DefaultListModel;
 import javax.swing.UIManager;
+
+import alarmClockThreads.AlarmClock;
+import alarmClockThreads.threadSpawner;
+import alarmStartUpHelpers.AlarmsStartupReader;
 
 
 @SuppressWarnings("serial")
+/**
+ * Class Gui
+ *
+ * It contains the Graphic User Interface for the Alarm Clock
+ *
+ * @author Francisco Garcia
+ * @Edit Aaron Kobelsky
+ * @version 3.2
+ */
 public class Gui extends JFrame implements ActionListener, Runnable{
 
     //Variables for GUI Component
     private JFrame frame;
     private JPanel panel;
-    private JButton btnSwitch, btnList, btnAlarm;
+    private JButton btnList, btnAlarm;
     private JLabel label;
-    private boolean doAnalogDisplay = false;
     private BufferedImage image;
-    private int w,h;
-
-
-    //TODO this has to go, the text file write function should read out of the alarm list
-    AlarmClock a = new AlarmClock(new Date());
 
     TrayIcon trayIcon;
     SystemTray tray;
@@ -72,12 +65,9 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         //reads the image
         try {
             image = ImageIO.read(getClass().getResource("alarmclockbg.jpg"));
-            w = image.getWidth();
-            h = image.getHeight();
 
         } catch (IOException ioe) {
             System.out.println("Could not read in the pic");
-            //System.exit(0);
         }
 
         //Initialize JFrame of the GUI
@@ -108,14 +98,6 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         };
 
         panel.setLayout(null);
-
-        /*
-        //Initialize the first JButton of the GUI
-        btnSwitch = new JButton("Switch");
-        btnSwitch.addActionListener(this);
-        btnSwitch.setBounds(175, 375, 120, 35);
-        panel.add(btnSwitch);
-        */
 
         //Initialize the first JButton of the GUI
         btnList = new JButton("Alarms List");
@@ -273,23 +255,15 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     	try {
 			asr.readAndReconstructAlarms();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         //infinite while loop updates the GUI every second so that it always displays the correct time
         while(true){
-            //if the time should be displayed in an analog format
-            if(this.doAnalogDisplay){
-                this.label.setText("Analog Display");
-            }
-            //else the time should be displayed in a digital format
-            else{
-                String date = this.getTime();
-                this.label.setText(date);
-            }
+            //display the current time
+            String date = this.getTime();
+            this.label.setText(date);
             //refresh the GUI to reflect the changed contents
             this.repaint();
         }
@@ -303,12 +277,6 @@ public class Gui extends JFrame implements ActionListener, Runnable{
      */
     public void actionPerformed(ActionEvent e) {
         String temp = e.getActionCommand();
-
-        /*
-        if(temp == "Switch"){
-            this.doAnalogDisplay = !this.doAnalogDisplay;
-        }
-        */
 
         if(temp == "Alarms List"){
             alarmList.run();
@@ -337,7 +305,6 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         int hour;
         int minute;
         String label;
-        int day;
         int dailyRepeat;
         int weeklyRepeat;
 
@@ -348,19 +315,50 @@ public class Gui extends JFrame implements ActionListener, Runnable{
             bw = new BufferedWriter(fw);
             for(int i = 0; i < allThreads.size(); i++){
             	AlarmClock temp = alarms.getThreadByID(allThreads.get(i)).alarm;
-            	hour = temp.getInputHour();
-                minute = temp.getInputMinute();
+            	String toWrite = "";
+            	hour = temp.getAlarmHour();
+                minute = temp.getAlarmMinute();
                 label = temp.getAlarmLabel();
-                day = temp.getInputDay();
-                dailyRepeat = 0;
-                weeklyRepeat = 0;
-                if(temp.getRepeatDaily())
+                if(temp.getRepeatDaily()){
                 	dailyRepeat = 1;
-                if(temp.getRepeatWeekly())
+                }
+                else{
+                	dailyRepeat = 0;
+                }
+                if(temp.getRepeatWeekly()){
                 	weeklyRepeat = 1;
-            	bw.write(hour + "\n" + minute + "\n" + label +
-            			"\n" + day + "\n" + dailyRepeat + "\n" +
-            			weeklyRepeat + "\n" + "EOA" + "\n");
+                }
+                else{
+                	weeklyRepeat = 0;
+                }
+                toWrite = hour + "\n" + minute + "\n" + label +
+            			"\n" + dailyRepeat + "\n" +
+            			weeklyRepeat + "\n";
+                HashMap<Integer, Boolean> days = temp.getAlarmDays();
+                if(days.containsKey(1) && days.get(1)){
+                	toWrite += "1\n";
+                }
+                if(days.containsKey(2) && days.get(2)){
+                	toWrite += "2\n";
+                }
+                if(days.containsKey(3) && days.get(3)){
+                	toWrite += "3\n";
+                }
+                if(days.containsKey(4) && days.get(4)){
+                	toWrite += "4\n";
+                }
+                if(days.containsKey(5) && days.get(5)){
+                	toWrite += "5\n";
+                }
+                if(days.containsKey(6) && days.get(6)){
+                	toWrite += "6\n";
+                }
+                if(days.containsKey(7) && days.get(7)){
+                	toWrite += "7\n";
+                }
+                toWrite += "EOA" + "\n";
+                
+            	bw.write(toWrite);
             }
             bw.write("EOF");
             System.out.println("Done");
