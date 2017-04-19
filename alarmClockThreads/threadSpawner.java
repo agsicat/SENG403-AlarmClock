@@ -9,10 +9,11 @@ import alarmGUIs.Gui;
  * Properly dismisses and cancels alarm thread upon calling
  * respective "dismiss", "cancel" and "snooze" functions
  * 
- * @author Jeff
- * @edit Aaron Kobelsky - v4.0 Change alarm function
- * @edit Angela Sicat - v5.0 Snooze alarm function
- * @version 5.0
+ * @Author Jeff
+ * @Edit Aaron Kobelsky - v4.0 Change alarm function
+ * @Edit Angela Sicat - v5.0 Snooze alarm function
+ * @Edit Angela Sicat - v5.1 Cleaned up Snooze and Dismiss function
+ * @Cersion 5.1
  **/
 public class threadSpawner {
 
@@ -72,51 +73,89 @@ public class threadSpawner {
 			System.out.println("An alarm is not ringing!");
 		else
 		{
-
-			// Get original alarm time
+			// Stop original alarm as "ringing"
+			getThreadByID(id).alarm.setCheckRing(false);
+			
+			// Initialize original alarm variables by getting original alarm information to use for the Snoozed Alarm
+			long originalAlarmID = getThreadByID(id).alarm.getAlarmID();
 			int originalAlarmHour = getThreadByID(id).alarm.getAlarmHour();
 			int originalAlarmMinute = getThreadByID(id).alarm.getAlarmMinute();
 			HashMap<Integer, Boolean> originalAlarmDay = getThreadByID(id).alarm.getAlarmDays();
 			boolean daily = getThreadByID(id).alarm.getRepeatDaily();
 			boolean weekly = getThreadByID(id).alarm.getRepeatWeekly();
-			String snoozedAlarmLabel = "Snoozed " + getThreadByID(id).alarm.getAlarmLabel() + " ";
+			String originalAlarmLabel = getThreadByID(id).alarm.getAlarmLabel();
 			
+			// Initialize the variables for manipulating the Snoozed Alarm of an Original Alarm
 			int snoozedAlarmHour = 0;
 			int snoozedAlarmMinute = 0;
+			String snoozedAlarmLabel = "Snoozed " + originalAlarmLabel;
 			
 			// Add snooze duration to original alarm time
+			// This case handles when the time is one minute before a new hour
 			if (originalAlarmHour <= 22 && originalAlarmMinute == 59){
 				snoozedAlarmHour = originalAlarmHour + 1;
 				snoozedAlarmMinute = 0;
-				
+			// This case handles when the time is exactly the minute before 12-Midnight
 			}else if (originalAlarmHour == 23 && originalAlarmMinute == 59){
 				snoozedAlarmHour = 0;
-				snoozedAlarmMinute = 0;
-				
+				snoozedAlarmMinute = 0;	
+			// This case handles when the time is any other time that is not the case above
 			}else if (originalAlarmMinute <= 58){
 				snoozedAlarmHour = originalAlarmHour;
 				snoozedAlarmMinute = originalAlarmMinute + 1;
-				
 			}
 			
-			
-			// Make new thread with snoozed alarm time      
-			//create a new AlarmClock object
-            AlarmClock snoozedAlarm = new AlarmClock(snoozedAlarmHour, snoozedAlarmMinute, originalAlarmDay, daily, weekly, snoozedAlarmLabel);
-            
-            snoozedAlarm.setAlarmSet(true);
-            
-            //start the snoozed alarm thread
-            Gui.alarms.spawnNewThread(snoozedAlarm);
-			
-            System.out.println("threadID = " + getThreadByID(id).alarm.getAlarmID());
-            System.out.println("The '" + getThreadByID(id).alarm.getAlarmLabel() + "' alarm has been snoozed until " + snoozedAlarmHour + ":" + snoozedAlarmMinute);
+			// If the alarm is a Daily Repeating or Weekly Repeating from the boolean value of the variables
+			//   Then Keep Original Alarm in the Alarms List
+			// 	 And Create & Save Snooze Alarm(s) in the Alarms list
+			if(daily || weekly){
+				// Flag to ensure the repeating alarm is still accessible
+				getThreadByID(id).alarm.setRepeatDismiss(true);
+				
+				// Make new thread with snoozed alarm time      
+				// create a new AlarmClock object
+	            AlarmClock snoozedAlarm = new AlarmClock(snoozedAlarmHour, snoozedAlarmMinute, originalAlarmDay, daily, weekly, snoozedAlarmLabel);
+	            snoozedAlarm.setAlarmSet(true);
+	            
+	            // start the snoozed alarm thread
+	            Gui.alarms.spawnNewThread(snoozedAlarm);
+	            
+	            System.out.println("original alarm threadID = " + originalAlarmID);
+	            System.out.println("snoozed alarm threadID = " + snoozedAlarm.getAlarmID());
+	            Gui.alarmList.addNewElement(snoozedAlarm.getAlarmID());
+				
+	            // System message to know what has been changed for Snooze Alarm
+	            System.out.println("The '" + originalAlarmLabel + "' alarm has been snoozed until " + snoozedAlarmHour + ":" + snoozedAlarmMinute);
 
+	        // Else - the alarm is not repeating
+	        //  Then Create & Save Snooze Alarm(s) in the Alarms list
+	        //  And Dismiss (remove) Original Alarm from the Alarms List
+			}else {
+				// Make new thread with snoozed alarm time      
+				// create a new AlarmClock object
+	            AlarmClock snoozedAlarm = new AlarmClock(snoozedAlarmHour, snoozedAlarmMinute, originalAlarmDay, daily, weekly, snoozedAlarmLabel);
+	            snoozedAlarm.setAlarmSet(true);
+	            
+	            // start the snoozed alarm thread
+	            Gui.alarms.spawnNewThread(snoozedAlarm);
+	            
+	            System.out.println("original alarm threadID = " + originalAlarmID);
+	            System.out.println("snoozed alarm threadID = " + snoozedAlarm.getAlarmID());
+	            Gui.alarmList.addNewElement(snoozedAlarm.getAlarmID());
+				
+	            // System message to know what has been changed for Snooze Alarm
+	            System.out.println("The '" + originalAlarmLabel + "' alarm has been snoozed until " + snoozedAlarmHour + ":" + snoozedAlarmMinute);
+				
+				// Dismiss (remove) Original Alarm from the Alarms List
+				Gui.alarmList.removeElementByID(originalAlarmID);	
+			}
+			
 			// Stop snoozed alarm thread(s) (Clean up of the loop of snoozed alarms)
             if (getThreadByID(id).alarm.getAlarmLabel().contains("Snoozed")){
-            	System.out.println("Dismissing " + getThreadByID(id).alarm.getAlarmLabel() + "to allow the next snooze thread to run");
+            	System.out.println("Dismissing '" + getThreadByID(id).alarm.getAlarmLabel() + "' to allow the next snooze thread to run");
             	getThreadByID(id).alarm.setAlarmSet(false);
-    			this.stopThread(id);	
+				Gui.alarmList.removeElementByID(id);
+    			this.stopThread(id);
             }
             
 		}
@@ -131,6 +170,13 @@ public class threadSpawner {
 			if(getThreadByID(id).alarm.getRepeatDaily() || getThreadByID(id).alarm.getRepeatWeekly()){
 				getThreadByID(id).alarm.setRepeatDismiss(true);
 				getThreadByID(id).alarm.setCheckRing(false);
+				
+	            if (getThreadByID(id).alarm.getAlarmLabel().contains("Snoozed")){
+	            	getThreadByID(id).alarm.setAlarmSet(false);
+					Gui.alarmList.removeElementByID(id);
+	    			this.stopThread(id);
+	            }
+				
 			}
 			else{
 				getThreadByID(id).alarm.setCheckRing(false);
@@ -141,7 +187,7 @@ public class threadSpawner {
 		}
 	}
 
-	// Matteo Molnar: method called when an alarm is to be cancelled, sets alarmSet to false
+	// Matteo Molnar: Method called when an alarm is to be cancelled, sets alarmSet to false
 	public void cancelAlarm(Long id) {
 		if (getThreadByID(id).alarm.getAlarmSet() == false)
 			System.out.println("No alarm is set to cancel");
