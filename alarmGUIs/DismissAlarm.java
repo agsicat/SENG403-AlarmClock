@@ -149,6 +149,7 @@ public class DismissAlarm {
 			if (tempButtonName == "Snooze") {
 				// Closes window when Snooze is selected
 				frame.dispose();
+				DismissAlarm.numOfWindows--;
 
 				// Then runs the Snooze function by passing the alarmID of current alarm to snooze the thread
 				Gui.alarms.snoozeAlarm(alarmID);
@@ -159,6 +160,7 @@ public class DismissAlarm {
 				
 				// Then closes window when Dismiss is selected
 				frame.dispose();
+				DismissAlarm.numOfWindows--;
 			}
 
 		}

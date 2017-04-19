@@ -40,7 +40,6 @@ public class Gui extends JFrame implements ActionListener, Runnable{
     private JPanel panel;
     private JButton btnList, btnAlarm;
     private JLabel label;
-    private boolean doAnalogDisplay = false;
     private BufferedImage image;
 
     TrayIcon trayIcon;
@@ -99,14 +98,6 @@ public class Gui extends JFrame implements ActionListener, Runnable{
         };
 
         panel.setLayout(null);
-
-        /*
-        //Initialize the first JButton of the GUI
-        btnSwitch = new JButton("Switch");
-        btnSwitch.addActionListener(this);
-        btnSwitch.setBounds(175, 375, 120, 35);
-        panel.add(btnSwitch);
-        */
 
         //Initialize the first JButton of the GUI
         btnList = new JButton("Alarms List");
@@ -270,15 +261,9 @@ public class Gui extends JFrame implements ActionListener, Runnable{
 		}
         //infinite while loop updates the GUI every second so that it always displays the correct time
         while(true){
-            //if the time should be displayed in an analog format
-            if(this.doAnalogDisplay){
-                this.label.setText("Analog Display");
-            }
-            //else the time should be displayed in a digital format
-            else{
-                String date = this.getTime();
-                this.label.setText(date);
-            }
+            //display the current time
+            String date = this.getTime();
+            this.label.setText(date);
             //refresh the GUI to reflect the changed contents
             this.repaint();
         }
@@ -292,12 +277,6 @@ public class Gui extends JFrame implements ActionListener, Runnable{
      */
     public void actionPerformed(ActionEvent e) {
         String temp = e.getActionCommand();
-
-        /*
-        if(temp == "Switch"){
-            this.doAnalogDisplay = !this.doAnalogDisplay;
-        }
-        */
 
         if(temp == "Alarms List"){
             alarmList.run();
