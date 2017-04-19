@@ -24,17 +24,18 @@ import java.awt.Dimension;
  * @edit Angela Sicat - v4.0 added functionality for Snooze button
  * @Edit Aaron Added support for displaying some of the alarm's information on the GUI
  * @Edit Aaron Added comments
- * @version 4.2
+ * @Edit Angela to clean up functionality for Snooze and Dismiss
+ * @version 4.3
  **/
 public class DismissAlarm {
 
-	//frame of the pop up GUI
+	// frame of the pop up GUI
 	private JFrame frame;
 
-	//alarmID of the alarm this GUI represents
+	// alarmID of the alarm this GUI represents
 	private long alarmID;
 	
-	//variables to allow for "graceful" handling of multiple alarms
+	// variables to allow for "graceful" handling of multiple alarms
 	public static int numOfWindows = 0;
 	public int xOffset = 50;
 	public int yOffset = 50;
@@ -54,10 +55,10 @@ public class DismissAlarm {
 	 */
 	private void initialize(long ID) {
 		
-		//save the alarmID
+		// save the alarmID
 		alarmID = ID;
 		
-		//initialize the main GUI frame
+		// initialize the main GUI frame
 		frame = new JFrame();
 		Color background = new Color(165,233,220);
 		frame.setBounds(100, 100, 450, 300);
@@ -72,12 +73,12 @@ public class DismissAlarm {
 			}
 		});
 		
-		//initialize a panel to diaplay in the frame
+		// initialize a panel to display in the frame
 		JPanel panel = new JPanel();
 		panel.setLayout(null);
 		panel.setBackground(background);
 		
-		//label of the ringing alarm to be displayed on the GUI
+		// label of the ringing alarm to be displayed on the GUI
 		JLabel lblAlarm = new JLabel(" " + Gui.alarms.getThreadByID(alarmID).alarm.getAlarmLabel(), SwingConstants.CENTER);
 		lblAlarm.setBounds(30, 25, 360, 65);
 		lblAlarm.setBackground(Color.WHITE);
@@ -85,7 +86,7 @@ public class DismissAlarm {
 		lblAlarm.setFont(new Font("Serif", Font.PLAIN, 50));
 		panel.add(lblAlarm);
 						
-		//display the time the alarm was set for on the GUI
+		// display the time the alarm was set for on the GUI
 		int hour = Gui.alarms.getThreadByID(alarmID).alarm.getAlarmHour();
 		int min = Gui.alarms.getThreadByID(alarmID).alarm.getAlarmMinute();
 		String h = "";
@@ -116,22 +117,22 @@ public class DismissAlarm {
 		lblAlarmTime.setFont(new Font("Serif", Font.PLAIN, 25));
 		panel.add(lblAlarmTime);
 					
-		//button to snooze the current alarm for 5 minutes
+		// button to snooze the current alarm for 1 minute
 		JButton btnSnooze = new JButton("Snooze");
 		btnSnooze.addActionListener(new DismissActionListener());
 		btnSnooze.setBounds(112, 166, 100, 23);
 		panel.add(btnSnooze);
 						
-		//button to dismiss the current alarm
+		// button to dismiss the current alarm
 		JButton btnDismiss = new JButton("Dismiss");
 		btnDismiss.setBounds(222, 166, 100, 23);
 		btnDismiss.addActionListener(new DismissActionListener());
 		panel.add(btnDismiss);
 		
-		//add the panel to the frame
+		// add the panel to the frame
 		frame.add(panel);
 		
-		//make sure this GUI does not appear directly on top of another dismiss GUI
+		// make sure this GUI does not appear directly on top of another dismiss GUI
 		int centreX = (int) ((dimension.getWidth() - frame.getWidth()) / 2);
 		int centreY = (int) ((dimension.getHeight() - frame.getHeight()) / 2);
 		frame.setLocation((centreX + (xOffset * numOfWindows)), (centreY + (yOffset * numOfWindows)));
